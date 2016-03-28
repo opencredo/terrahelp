@@ -1,0 +1,15 @@
+*.dll
+*.exe
+.idea/
+*.ipr
+example.tf
+bin/
+modules-dev/
+pkg/
+.vagrant/
+*.log
+*.bak
+*~
+.*.swp
+vendor/*
+!vendor/vendor.json

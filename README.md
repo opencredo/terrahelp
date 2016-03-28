@@ -11,6 +11,9 @@ This is an ongoing project, and at present the following capabilities are provid
 The above encryption can either be done against the entire file, or inline, i.e. only the sensitive data within
 the tfstate file is encrypted.
 
+The following blog post also provides an intial overview of how the encryption
+functionality can be used.
+
 ## Installation
 
 ### Pre-built binary
