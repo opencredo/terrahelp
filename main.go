@@ -13,7 +13,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "terrahelp"
 	app.Usage = "Provides additional functions helpful with terraform development"
-	app.Version = "0.1.2"
+	app.Version = "0.2.0"
 	app.Author = "https://github.com/opencredo (Nicki Watt)"
 	app.Commands = []cli.Command{
 		{
