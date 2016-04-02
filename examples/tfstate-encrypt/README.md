@@ -1,18 +1,24 @@
 ## Terrahelp Example - tfstate encrypt / decrypt
 
-This project contains a very simple terraform setup composed entirely of 
-local resources (e.g. template resource) and exists in order to demonstrate the 
-encryption and decryption functionality. This project is safe to run and will 
-not cost you any money in a cloud provider!
+This example contains a very simple terraform setup composed entirely of 
+local resources (e.g. template resource) and exists in order to demonstrate how
+you can do basic encryption and decryption functionality in the absence of a 
+formal solution (ref https://github.com/hashicorp/terraform/issues/516).
  
-The CLI provides more comprehensive view of the various options available, 
+This example is completely safe to run and will not land up costing you any 
+money in a cloud provider!
+ 
+The CLI itself offers a more comprehensive view of the various options available, 
 so please use this if you need more info.
 Additionally you can read this corresponding blog which gives a more detailed explanation
 of this functionality and its usage: ADDINHERE
 
 ### Simple inline encryption
 
-* Run terraform as normal and inspect the terraform.tfstate content before encryption is applied
+This example will demonstrate _inline_ encryption and decryption using the _simple_ encryption provider
+and will use explicit command line arguments.
+
+* Run terraform as normal
 
         terraform plan
         terraform apply
@@ -59,8 +65,8 @@ This should look something like below:
         terrahelp tfstate encrypt -inline=true -simple-key="AES256Key-32Characters0987654321" 
 
 * Inspect `terraform.tfstate` content after encryption. Note how all the sensitive values, as 
-detected in the terraform.tfvars file, have now been replaced with encrypted versions, and will
-look something like below: 
+detected in the `terraform.tfvars` file, have now been replaced with encrypted versions. The
+content should look something like that below: 
 
         {
             "version": 1,
@@ -95,15 +101,18 @@ look something like below:
             ]
         }
 
-* To get your normal tfstate content back, decrypt
+* To get your normal 'terraform.tfstate' content back, decrypt
 
         terrahelp tfstate decrypt -inline=true -simple-key="AES256Key-32Characters0987654321" 
 
-* Verify `terraform.tfstate` contents after decryption. This should now look exactly the same
+* Again verify `terraform.tfstate` content after decryption. This should now look exactly the same
 as it did before doing the encryption
 
 
-### Vault whole file encryption
+### Vault full file encryption
+
+This example will demonstrate _full_ encryption and decryption using the _vault_ encryption provider
+and will use environment variables rather than explicit command line arguments to control the process.
 
 * First, ensure you have a running Vault server available. You can quite easily download the latest version from 
 here, then open up a new terminal, and for experimentation purposes, simply run the server in dev mode i.e.
@@ -111,14 +120,17 @@ here, then open up a new terminal, and for experimentation purposes, simply run 
         vault server -dev -dev-root-token-id="terrahelp-devonly-vault-root-token"
 
 * In a separate terminal, change into this example project folder, and setup the necessary environment
-  variables required for us to talk to our dev Vault server, as well as run the helpful autoconfig
-  command to configure Vault with a default encryption key we can use. Then you can proceed as with the simple
-  example above i.e.
+  variables required for us to talk to our dev Vault server, as well as run the next set of terrahelp
+  commands. Specifically will also run the `vault-autoconfig` command to configure Vault with the
+  named encryption key we wnat to use. i.e.
 
         export VAULT_TOKEN="terrahelp-devonly-vault-root-token"
         export VAULT_ADDR="http://127.0.0.1:8200"
         export VAULT_SKIP_VERIFY="true"
         
+        export TH_ENCRYPTION_PROVIDER="vault"
+        export TH_ENCRYPTION_MODE="full"
+        export TH_VAULT_NAMED_KEY="examplekey"
         terrahelp tfstate vault-autoconfig
 
 * Run terraform as normal and inspect the terraform.tfstate content before encryption is applied
@@ -165,7 +177,7 @@ This should look something like below:
 
 * Encrypt
 
-         terrahelp tfstate encrypt -provider=vault 
+         terrahelp tfstate encrypt  
 
 * Inspect `terraform.tfstate` content after encryption. Note how all the sensitive values, as 
 detected in the terraform.tfvars file, have now been replaced with encrypted versions, and will
@@ -181,7 +193,7 @@ look something like below:
 
 * To get your normal tfstate content back, decrypt
 
-        terrahelp tfstate decrypt -provider=vault  
+        terrahelp tfstate decrypt  
 
 * Verify `terraform.tfstate` contents after decryption. This should now look exactly the same
 as it did before doing the encryption

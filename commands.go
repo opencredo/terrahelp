@@ -234,6 +234,7 @@ func vaultPrepSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command
 			cli.StringFlag{
 				Name:        "namedkey",
 				Value:       terrahelp.ThNamedEncryptionKey,
+				EnvVar:      "TH_VAULT_NAMED_KEY",
 				Usage:       "Named Vault encryption key to use (defaults to " + terrahelp.ThNamedEncryptionKey + ")",
 				Destination: &ctxOpts.NamedEncKey,
 			},

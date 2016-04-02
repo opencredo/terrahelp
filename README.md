@@ -1,18 +1,32 @@
 ## Terrahelp - terraforming, with a little help from your friends
 
-terrahelp is as a command line utility written in [Go](https://github.com/golang/go). 
-It aims to provide you with a utility to help fill in some of the gaps, and perform some additional tasks 
-which you always seem to find yourself doing when working with [Terraform](https://www.terraform.io). 
+terrahelp is as a command line utility written in [Go](https://github.com/golang/go) and is aimed at 
+providing supplementary functionality which can sometimes prove useful when working with 
+[Terraform](https://www.terraform.io). 
 
-This is an ongoing project, and at present the following capabilities are provided:
 
-* Encryption and decryption of local terraform state files (using Vault's "encryption as a service" functionality)
+At present, the functionality offered includes:
 
-The above encryption can either be done against the entire file, or inline, i.e. only the sensitive data within
-the tfstate file is encrypted.
+* _Encryption & decryption of terraform state files_.
+This can be done in either full or inline mode, and provides the ability to leverage either a simple or vault based encryption provider. 
+For more details and an example of how to use it please see [the example README](https://github.com/opencredo/terrahelp/tree/master/examples/tfstate-encrypt). 
+Additionally the following blog post provides more details and background as well: 
+  [OpenCredo blog post](https://github.com/opencredo/terrahelp/tree/master)
 
-The following blog post also provides an intial overview of how the encryption
-functionality can be used.
+        NAME:
+           terrahelp tfstate - Options for performing actions on the local tfstate files.
+        
+        USAGE:
+           terrahelp tfstate command [command options] [arguments...]
+        
+        COMMANDS:
+            vault-autoconfig	(Vault provider only) performs a very basic vault setup to allow Vault 
+                                provider to be used out of the box.
+            encrypt		        Uses configured provider to encrypt local .tfstate files
+            decrypt		        Uses configured provider to decrypt local .tfstate files
+        
+        OPTIONS:
+           --help, -h	show help
 
 ## Installation
 
@@ -22,13 +36,14 @@ An initial pre-built terrahelp binary can be found [here](https://github.com/ope
 
 #### OSX, Linux & *BSD
 
-Download a binary, set the correct permissions:
+Download a binary, set the correct permissions, add to your PATH:
 
     chmod +x terrahelp
+    export PATH=$PATH:/wherever/terrahelp
 
 And run it:
 
-    ./terrahelp
+    terrahelp -help
 
 #### Windows
 
