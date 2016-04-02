@@ -11,7 +11,8 @@ money in a cloud provider!
 The CLI itself offers a more comprehensive view of the various options available, 
 so please use this if you need more info.
 Additionally you can read this corresponding blog which gives a more detailed explanation
-of this functionality and its usage: ADDINHERE
+of this functionality and its usage: [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault).
+
 
 ### Simple inline encryption
 
@@ -101,7 +102,7 @@ content should look something like that below:
             ]
         }
 
-* To get your normal 'terraform.tfstate' content back, decrypt
+* To get your normal `terraform.tfstate` content back, decrypt
 
         terrahelp tfstate decrypt -inline=true -simple-key="AES256Key-32Characters0987654321" 
 

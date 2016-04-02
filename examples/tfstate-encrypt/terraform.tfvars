@@ -1,4 +1,9 @@
-# Some comment
+# ------------------------------------------------------------------
+#    NOTE: terraform.tfvars should ordinarily NEVER be checked into
+#          version control. This file is only here because it is
+#          part of demonstrating sample functionality, it does not
+#          actually contain anything sensitive.
+# -------------------------------------------------------------------
 pretend_aws_access_key     = "madeup-aws-access-key-PEJFNS"
 pretend_aws_secret_key     = "madeup-aws-secret-key-KGSDGH"
 tf_sensitive_key_1         = "sensitive-value-1-AK#%DJGHS*G"
