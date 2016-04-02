@@ -17,7 +17,6 @@ import (
 
 const (
 	thCryptoWrapRegExp = "\\@terrahelp\\-encrypted\\((.*?)\\)"
-	//thCryptoWrapRegExp = "\\@terrahelp\\-encrypted\\(.*?\\)"
 	thCryptoWrapPrefix = "@terrahelp-encrypted("
 	thCryptoWrapSuffix = ")"
 

@@ -11,7 +11,7 @@ providing supplementary functionality which can sometimes prove useful when work
 At present, it offers the following:
 
 * _Encryption & decryption of terraform state files_.
-Run in either full or inline mode, and leveraging either a simple or Vault based encryption provider, this
+Run in either full or inline mode, and leveraging either a simple or [Vault](https://www.vaultproject.io) based encryption provider, this
 functionality provides the ability to encrypt and decrypt terraform.tfstate files. 
 For more details, and an example of how to use it please see [the example README](https://github.com/opencredo/terrahelp/tree/master/examples/tfstate-encrypt). 
 Additionally the blog post [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault)

@@ -1,9 +1,5 @@
-deps:
-	go get -u github.com/kardianos/govendor
-	govendor sync
-
 test: deps
-	go test
+	go test -v ./...
 
 build: deps
 	go build -o ${GOPATH}/bin/terrahelp
