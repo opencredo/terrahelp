@@ -80,7 +80,7 @@ func createVaultEncrypter(vc VaultClient) (*VaultEncrypter, error) {
 	return &VaultEncrypter{vc}, nil
 }
 
-// Init is used to initialise Vault for the purposes of using
+// Init is used to initialise the VaultEncrypter for the purposes of using
 // its encryption as a service functionality
 func (cu *VaultEncrypter) Init(key string) error {
 	err := cu.vault.MountTransitBackend()
@@ -126,8 +126,11 @@ func (cu *VaultEncrypter) Decrypt(key string, ciphertext []byte) ([]byte, error)
 //                       SimpleEncrypter
 // ---------------------------------------------------------------
 
+// SimpleEncrypter provides basic AES based encryption
 type SimpleEncrypter struct{}
 
+// NewSimpleEncrypter creates a new SimpleEncrypter with
+// default configuration
 func NewSimpleEncrypter() *SimpleEncrypter {
 	return &SimpleEncrypter{}
 }
@@ -138,21 +141,21 @@ func (s *SimpleEncrypter) Init(key string) error {
 	return nil
 }
 
-// The key argument should be the AES key, either 16 or 32 bytes
-// to select AES-128 or AES-256.
-// "AES256Key-32Characters0987654321"
-func (s *SimpleEncrypter) Encrypt(skey string, text []byte) ([]byte, error) {
+// Encrypt will perform AES based encryption on the byte content provided.
+// The key should be an AES key, of either either 16 or 32 characters
+// which then informs whether AES-128 or AES-256 encryption is applied.
+func (s *SimpleEncrypter) Encrypt(key string, b []byte) ([]byte, error) {
 
-	key := []byte(skey)
+	bkey := []byte(key)
 
 	var block cipher.Block
 
-	block, err := aes.NewCipher(key)
+	block, err := aes.NewCipher(bkey)
 	if err != nil {
 		return nil, err
 	}
 
-	ciphertext := make([]byte, aes.BlockSize+len(text))
+	ciphertext := make([]byte, aes.BlockSize+len(b))
 
 	// iv =  initialization vector
 	iv := ciphertext[:aes.BlockSize]
@@ -162,15 +165,16 @@ func (s *SimpleEncrypter) Encrypt(skey string, text []byte) ([]byte, error) {
 	}
 
 	cfb := cipher.NewCFBEncrypter(block, iv)
-	cfb.XORKeyStream(ciphertext[aes.BlockSize:], []byte(text))
+	cfb.XORKeyStream(ciphertext[aes.BlockSize:], []byte(b))
 	sc := base64.StdEncoding.EncodeToString(ciphertext)
 
 	return applyTHCryptoWrap([]byte(sc)), nil
 }
 
-func (s *SimpleEncrypter) Decrypt(skey string, stext []byte) ([]byte, error) {
+// Decrypt will use the supplied AES key to decrypt the byte content provided.
+func (s *SimpleEncrypter) Decrypt(key string, b []byte) ([]byte, error) {
 
-	actualContent, err := extractFromTHCryptoWrap(stext)
+	actualContent, err := extractFromTHCryptoWrap(b)
 	if err != nil {
 		return nil, err
 	}
@@ -179,17 +183,17 @@ func (s *SimpleEncrypter) Decrypt(skey string, stext []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	key := []byte(skey)
+	bkey := []byte(key)
 	// should be plaintext by now
 
-	block, err := aes.NewCipher(key)
+	block, err := aes.NewCipher(bkey)
 
 	if err != nil {
 		return nil, err
 	}
 
 	if len(ciphertext) < aes.BlockSize {
-		return nil, errors.New("ciphertext too short")
+		return nil, errors.New("decryption failed: ciphertext is too short")
 	}
 
 	iv := ciphertext[:aes.BlockSize]

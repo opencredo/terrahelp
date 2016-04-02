@@ -21,6 +21,7 @@ func NewMockVaultClient() *MockVaultClient {
 	return &MockVaultClient{}
 }
 
+// MountTransitBackend mocks the mounting of the transit backend
 func (m *MockVaultClient) MountTransitBackend() error {
 	m.transitMounted = true
 	return nil
@@ -34,12 +35,15 @@ func (m *MockVaultClient) namedEncryptionKeyExists(key string) (bool, error) {
 	return m.key != "", nil
 }
 
+// RegisterNamedEncryptionKey registers the named encryption key
+// within the mock Vault service
 func (m *MockVaultClient) RegisterNamedEncryptionKey(key string) error {
 	m.transitMounted = true
 	m.key = key
 	return nil
 }
 
+// Encrypt uses the named encryption key to mock encrypt the supplied content
 func (m *MockVaultClient) Encrypt(key, s string) (string, error) {
 	if !m.transitMounted {
 		return "", errors.New("Mock client has not had transit backend mounted")
@@ -51,6 +55,7 @@ func (m *MockVaultClient) Encrypt(key, s string) (string, error) {
 	return m.doSimEncryption(s), nil
 }
 
+// Decrypt uses the named encryption key to mock decrypt the supplied content
 func (m *MockVaultClient) Decrypt(key, s string) (string, error) {
 	if !m.transitMounted {
 		return "", errors.New("Mock client has not had transit backend mounted")

@@ -23,11 +23,11 @@ type TfstateOpts struct {
 	TfStateBkpFile string
 	TfvarsFilename string
 	EncProvider    string
+	EncMode        string
 	NamedEncKey    string
 	SimpleKey      string
 	BkpExt         string
 	NoBackup       bool
-	Inline         bool
 }
 
 // NewDefaultTfstateOpts creates TfstateOpts with all the
@@ -42,21 +42,31 @@ func NewDefaultTfstateOpts() *TfstateOpts {
 		SimpleKey:      "",
 		BkpExt:         ThBkpExtension,
 		NoBackup:       false,
-		Inline:         false,
+		EncMode:        ThEncryptModeFull,
 	}
 }
 
-// Tfstate default values to be used when not specified
+// Default file related values
 const (
 	TfstateFilename    = "terraform.tfstate"
 	TfstateBkpFilename = "terraform.tfstate.backup"
 	TfvarsFilename     = "terraform.tfvars"
+	ThBkpExtension     = ".terrahelpbkp"
 
+	// ThNamedEncryptionKey is default Vault named encryption key
 	ThNamedEncryptionKey = "terrahelp"
-	ThBkpExtension       = ".terrahelpbkp"
+)
 
+// Valid encryption providers
+const (
 	ThEncryptProviderSimple = "simple"
 	ThEncryptProviderVault  = "vault"
+)
+
+// Valid encryption modes
+const (
+	ThEncryptModeInline = "inline"
+	ThEncryptModeFull   = "full"
 )
 
 func (o *TfstateOpts) getEncryptionKey() string {
@@ -70,6 +80,13 @@ func (o *TfstateOpts) getEncryptionKey() string {
 	}
 }
 
+// InlineMode returns true if the Encryption mode is 'inline'
+func (o *TfstateOpts) InlineMode() bool {
+	return o.EncMode == ThEncryptModeInline
+}
+
+// ValidateForEncryptDecrypt ensures valid options have been set
+// for the encryption / decruption process
 func (o *TfstateOpts) ValidateForEncryptDecrypt() error {
 	if o.EncProvider == ThEncryptProviderSimple && o.SimpleKey == "" {
 		return fmt.Errorf("You must supply a valid simple-key when using the simply provider. " +
@@ -127,7 +144,7 @@ func (t *Tfstate) encrypt(ctx *TfstateOpts, f string) error {
 
 	// Encrypt and write out content
 	var b []byte
-	if ctx.Inline {
+	if ctx.InlineMode() {
 		log.Printf("Encrypting inline: %s ", f)
 		b, err = t.encryptInline(f, ctx.getEncryptionKey(), ctx.TfvarsFilename)
 	} else {
@@ -155,7 +172,7 @@ func (t *Tfstate) decrypt(ctx *TfstateOpts, f string) error {
 	if err != nil {
 		return err
 	}
-	if ctx.Inline {
+	if ctx.InlineMode() {
 		plain, err = t.decryptInline(ciphertext, ctx.getEncryptionKey())
 	} else {
 		plain, err = t.Encrypter.Decrypt(ctx.getEncryptionKey(), ciphertext)

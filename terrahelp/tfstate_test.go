@@ -36,7 +36,7 @@ func defaultVaultEncryptableTfstateOpts(t *testing.T, bkp bool) *TfstateOpts {
 func defaultTestInlineTfstateOpts(t *testing.T, bkp bool) *TfstateOpts {
 	ctx := NewDefaultTfstateOpts()
 	ctx.EncProvider = ThEncryptProviderVault
-	ctx.Inline = true
+	ctx.EncMode = ThEncryptModeInline
 	ctx.NoBackup = bkp
 	return ctx
 }
@@ -229,7 +229,7 @@ func TestTfstate_VaultEncrypter_Decrypt_wholefile_prevEncryptedInline(t *testing
 	tp, tu, _ := newVaultEncryptableExampleProject(t, "encrypted-inline")
 	defer tp.restore()
 	ctx := defaultTestInlineTfstateOpts(t, false)
-	ctx.Inline = false
+	ctx.EncMode = ThEncryptModeFull
 
 	// When
 	err := tu.Decrypt(ctx)

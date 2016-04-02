@@ -10,12 +10,18 @@ import (
 	"os"
 )
 
-// VaultClient defines basic Vault functionality
-// required for the terrahelper
+// VaultClient defines the basic functionality required by terrahelp
+// when interacting with Vault
 type VaultClient interface {
+
+	// RegisterNamedEncryptionKey registers the named encryption key
+	// within Vault's transit backend
 	RegisterNamedEncryptionKey(key string) error
+	// MountTransitBackend ensures the transit backend is mounted
 	MountTransitBackend() error
-	Encrypt(key, b64text string) (string, error)
+	// Encrypt uses the named encryption key to encrypt the supplied content
+	Encrypt(key, text string) (string, error)
+	// Decrypt uses the named encryption key to decrypt the supplied content
 	Decrypt(key, ciphertext string) (string, error)
 
 	transitMountExists() (bool, error)
@@ -46,6 +52,7 @@ func NewDefaultVaultClient() (*DefaultVaultClient, error) {
 	return &DefaultVaultClient{vclient}, nil
 }
 
+// MountTransitBackend ensures the transit backend is mounted
 func (v *DefaultVaultClient) MountTransitBackend() error {
 	exists, err := v.transitMountExists()
 	if err != nil {
@@ -67,6 +74,8 @@ func (v *DefaultVaultClient) MountTransitBackend() error {
 	return nil
 }
 
+// RegisterNamedEncryptionKey registers the named encryption key
+// within Vault's transit backend
 func (v *DefaultVaultClient) RegisterNamedEncryptionKey(key string) error {
 	exists, err := v.namedEncryptionKeyExists(key)
 	if err != nil {
@@ -83,8 +92,6 @@ func (v *DefaultVaultClient) RegisterNamedEncryptionKey(key string) error {
 	return nil
 }
 
-// DoesMountExist returns true if a mount under name mountName exists,
-// otherwise false
 func (v *DefaultVaultClient) transitMountExists() (bool, error) {
 	mp, err := v.Sys().ListMounts()
 	if err != nil {
@@ -110,6 +117,7 @@ func (v *DefaultVaultClient) namedEncryptionKeyExists(key string) (bool, error) 
 
 }
 
+// Decrypt uses the named encryption key to decrypt the supplied content
 func (v *DefaultVaultClient) Decrypt(key, ciphertext string) (string, error) {
 	kv := map[string]interface{}{"ciphertext": ciphertext}
 	s, err := v.Logical().Write(v.decryptEndpoint(key), kv)
@@ -122,6 +130,7 @@ func (v *DefaultVaultClient) Decrypt(key, ciphertext string) (string, error) {
 	return s.Data["plaintext"].(string), nil
 }
 
+// Encrypt uses the named encryption key to encrypt the supplied content
 func (v *DefaultVaultClient) Encrypt(key, b64text string) (string, error) {
 	kv := map[string]interface{}{"plaintext": b64text}
 	s, err := v.Logical().Write(v.encryptEndpoint(key), kv)
