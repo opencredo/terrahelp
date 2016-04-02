@@ -6,10 +6,10 @@ example.tf
 bin/
 modules-dev/
 pkg/
+examples/tfstate-encrypt/*.tfstate*
 .vagrant/
 *.log
 *.bak
 *~
 .*.swp
-vendor/*
-!vendor/vendor.json
+
