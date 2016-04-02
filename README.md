@@ -1,17 +1,21 @@
-## Terrahelp - terraforming, with a little help from your friends
+[![Build Status](https://travis-ci.org/opencredo/terrahelp.svg?branch=master)](https://travis-ci.org/opencredo/terrahelp)
 
-terrahelp is as a command line utility written in [Go](https://github.com/golang/go) and is aimed at 
+# Terrahelp
+##### terraforming, with a little help from your friends
+
+`terrahelp` is as a command line utility written in [Go](https://github.com/golang/go) and is aimed at 
 providing supplementary functionality which can sometimes prove useful when working with 
 [Terraform](https://www.terraform.io). 
 
 
-At present, the functionality offered includes:
+At present, it offers the following:
 
 * _Encryption & decryption of terraform state files_.
-This can be done in either full or inline mode, and provides the ability to leverage either a simple or vault based encryption provider. 
-For more details and an example of how to use it please see [the example README](https://github.com/opencredo/terrahelp/tree/master/examples/tfstate-encrypt). 
-Additionally this blog post on [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault)
-provides more details and background as well.
+Run in either full or inline mode, and leveraging either a simple or Vault based encryption provider, this
+functionality provides the ability to encrypt and decrypt terraform.tfstate files. 
+For more details, and an example of how to use it please see [the example README](https://github.com/opencredo/terrahelp/tree/master/examples/tfstate-encrypt). 
+Additionally the blog post [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault)
+also provides more details and background as well.
 
         NAME:
            terrahelp tfstate - Options for performing actions on the local tfstate files.
@@ -47,7 +51,7 @@ And run it:
 
 #### Windows
 
-Still coming ...
+Not here yet ...
 
 ### Build it yourself  
 
@@ -58,8 +62,15 @@ You must have Go > 1.6 installed.
     mkdir -p "$GOPATH/src/github.com/opencredo/"
     git clone https://github.com/opencredo/terrahelp.git "$GOPATH/src/github.com/opencredo/terrahelp"
     cd "$GOPATH/src/github.com/opencredo/terrahelp"
-    make build
 
-And to run terrahelp:
+Build it
 
-    ./terrahelp
+    go install
+    
+Test it
+    
+    go test -v ./...
+
+Run it:
+
+    terrahelp -v 
