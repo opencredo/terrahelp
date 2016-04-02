@@ -7,7 +7,6 @@
 providing supplementary functionality which can sometimes prove useful when working with 
 [Terraform](https://www.terraform.io). 
 
-
 At present, it offers the following:
 
 * _Encryption & decryption of terraform state files_.
