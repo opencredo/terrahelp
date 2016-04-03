@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/opencredo/terrahelp.svg?branch=master)](https://travis-ci.org/opencredo/terrahelp)
+[![Travis CI][Travis-Image]][Travis-Url]
+[![ReportCard][ReportCard-Image]][ReportCard-Url]
 
 # Terrahelp
 ##### terraforming, with a little help from your friends
@@ -73,3 +74,8 @@ Test it
 Run it:
 
     terrahelp -v 
+
+[Travis-Image]: https://travis-ci.org/opencredo/terrahelp.svg?branch=master
+[Travis-Url]: https://travis-ci.org/opencredo/terrahelp
+[ReportCard-Url]: http://goreportcard.com/report/opencredo/terrahelp
+[ReportCard-Image]: http://goreportcard.com/badge/opencredo/terrahelp
