@@ -110,6 +110,11 @@ func encryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 				Usage:       "Suppress the creation of backup files before encrypting (defaults to false)",
 				Destination: &ctxOpts.NoBackup,
 			},
+			cli.BoolTFlag{
+				Name:        "dblencrypt",
+				Usage:       "Permits the double encryption of the content in a file (defaults to true)",
+				Destination: &ctxOpts.AllowDoubleEncrypt,
+			},
 			cli.StringFlag{
 				Name:        "simple-key",
 				EnvVar:      "TH_SIMPLE_KEY",

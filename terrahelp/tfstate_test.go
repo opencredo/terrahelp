@@ -3,6 +3,7 @@ package terrahelp
 import (
 	"github.com/stretchr/testify/assert"
 
+	"fmt"
 	"testing"
 )
 
@@ -81,6 +82,76 @@ func TestTfstate_VaultEncrypter_Encrypt_inline(t *testing.T) {
 	// 	backups of originals should exist
 	tp.assertExpectedFileContent(TfstateFilename+ThBkpExtension, "test-data/example-project/original/terraform.tfstate")
 	tp.assertExpectedFileContent(TfstateBkpFilename+ThBkpExtension, "test-data/example-project/original/terraform.tfstate.backup")
+}
+
+func TestTfstate_VaultEncrypter_Encrypt_inlineDoubleEncryptError(t *testing.T) {
+	// Given a known original project setup in temp dir
+	// and we are in the project dir ...
+	tp, tu, _ := newVaultEncryptableExampleProject(t, "original")
+	defer tp.restore()
+	ctx := defaultTestInlineTfstateOpts(t, false)
+	ctx.AllowDoubleEncrypt = false
+
+	// And a first time successful encryption ...
+	err := tu.Encrypt(ctx)
+	assert.NoError(t, err)
+
+	// When (2nd double encryption applied)
+	err = tu.Encrypt(ctx)
+	assert.Error(t, err, "Expected error if value already encrypted at least once")
+	assert.Equal(t, errMsgAlreadyEncrypted, err.Error(),
+		fmt.Sprint("not detected as already encrypted"))
+}
+
+func TestTfstate_VaultEncrypter_Encrypt_inlineDoubleEncryptAllowed(t *testing.T) {
+	// Given a known original project setup in temp dir
+	// and we are in the project dir ...
+	tp, tu, _ := newVaultEncryptableExampleProject(t, "original")
+	defer tp.restore()
+	ctx := defaultTestInlineTfstateOpts(t, false)
+
+	// And a first time successful encryption ...
+	err := tu.Encrypt(ctx)
+	assert.NoError(t, err)
+
+	// When (2nd double encryption applied)
+	err = tu.Encrypt(ctx)
+	assert.NoError(t, err, "No error expected when double encryption allowed")
+}
+
+func TestTfstate_VaultEncrypter_Encrypt_DoubleEncryptError(t *testing.T) {
+	// Given a known original project setup in temp dir
+	// and we are in the project dir ...
+	tp, tu, _ := newVaultEncryptableExampleProject(t, "original")
+	defer tp.restore()
+	ctx := defaultVaultEncryptableTfstateOpts(t, false)
+	ctx.AllowDoubleEncrypt = false
+
+	// And a first time successful encryption ...
+	err := tu.Encrypt(ctx)
+	assert.NoError(t, err)
+
+	// When (2nd double encryption applied)
+	err = tu.Encrypt(ctx)
+	assert.Error(t, err, "Expected error if value already encrypted at least once")
+	assert.Equal(t, errMsgAlreadyEncrypted, err.Error(),
+		fmt.Sprint("not detected as already encrypted"))
+}
+
+func TestTfstate_VaultEncrypter_Encrypt_DoubleEncryptAllowed(t *testing.T) {
+	// Given a known original project setup in temp dir
+	// and we are in the project dir ...
+	tp, tu, _ := newVaultEncryptableExampleProject(t, "original")
+	defer tp.restore()
+	ctx := defaultVaultEncryptableTfstateOpts(t, false)
+
+	// And a first time successful encryption ...
+	err := tu.Encrypt(ctx)
+	assert.NoError(t, err)
+
+	// When (2nd double encryption applied)
+	err = tu.Encrypt(ctx)
+	assert.NoError(t, err, "No error expected when double encryption allowed")
 }
 
 func TestTfstate_VaultEncrypter_Encrypt_inlineNoBackups(t *testing.T) {

@@ -19,30 +19,32 @@ type Tfstate struct {
 // TfstateOpts holds the options detailing how and on what state files
 // to perform the vault based encryption and decryption.
 type TfstateOpts struct {
-	TfstateFile    string
-	TfStateBkpFile string
-	TfvarsFilename string
-	EncProvider    string
-	EncMode        string
-	NamedEncKey    string
-	SimpleKey      string
-	BkpExt         string
-	NoBackup       bool
+	TfstateFile        string
+	TfStateBkpFile     string
+	TfvarsFilename     string
+	EncProvider        string
+	EncMode            string
+	NamedEncKey        string
+	SimpleKey          string
+	BkpExt             string
+	NoBackup           bool
+	AllowDoubleEncrypt bool
 }
 
 // NewDefaultTfstateOpts creates TfstateOpts with all the
 // default values set
 func NewDefaultTfstateOpts() *TfstateOpts {
 	return &TfstateOpts{
-		EncProvider:    ThEncryptProviderSimple,
-		TfstateFile:    TfstateFilename,
-		TfStateBkpFile: TfstateBkpFilename,
-		TfvarsFilename: TfvarsFilename,
-		NamedEncKey:    ThNamedEncryptionKey,
-		SimpleKey:      "",
-		BkpExt:         ThBkpExtension,
-		NoBackup:       false,
-		EncMode:        ThEncryptModeFull,
+		EncProvider:        ThEncryptProviderSimple,
+		TfstateFile:        TfstateFilename,
+		TfStateBkpFile:     TfstateBkpFilename,
+		TfvarsFilename:     TfvarsFilename,
+		NamedEncKey:        ThNamedEncryptionKey,
+		SimpleKey:          "",
+		BkpExt:             ThBkpExtension,
+		NoBackup:           false,
+		AllowDoubleEncrypt: true,
+		EncMode:            ThEncryptModeFull,
 	}
 }
 
@@ -55,6 +57,8 @@ const (
 
 	// ThNamedEncryptionKey is default Vault named encryption key
 	ThNamedEncryptionKey = "terrahelp"
+
+	errMsgAlreadyEncrypted = "Content has already been encrypted, not performing a double encryption!"
 )
 
 // Valid encryption providers
@@ -146,10 +150,10 @@ func (t *Tfstate) encrypt(ctx *TfstateOpts, f string) error {
 	var b []byte
 	if ctx.InlineMode() {
 		log.Printf("Encrypting inline: %s ", f)
-		b, err = t.encryptInline(f, ctx.getEncryptionKey(), ctx.TfvarsFilename)
+		b, err = t.encryptInline(f, ctx.getEncryptionKey(), ctx.TfvarsFilename, ctx.AllowDoubleEncrypt)
 	} else {
 		log.Printf("Encrypting: %s ", f)
-		b, err = t.encryptFileContent(f, ctx.getEncryptionKey())
+		b, err = t.encryptFileContent(f, ctx.getEncryptionKey(), ctx.AllowDoubleEncrypt)
 	}
 	if err != nil {
 		return err
@@ -207,20 +211,36 @@ func (t *Tfstate) decryptInline(b []byte, key string) ([]byte, error) {
 	return b, nil
 }
 
-func (t *Tfstate) encryptFileContent(f, key string) ([]byte, error) {
+func (t *Tfstate) encryptFileContent(f, key string, dblEncrypt bool) ([]byte, error) {
 	c, err := ioutil.ReadFile(f)
 	if err != nil {
 		return nil, err
+	}
+
+	if !dblEncrypt {
+		r := regexp.MustCompile(thCryptoWrapRegExp)
+		m := r.FindSubmatch(c)
+		if len(m) >= 1 {
+			return nil, fmt.Errorf(errMsgAlreadyEncrypted)
+		}
 	}
 
 	return t.Encrypter.Encrypt(key, c)
 }
 
 // tfsf = tfstate file, tfvf = tfvars file
-func (t *Tfstate) encryptInline(tfsf, key, tfvf string) ([]byte, error) {
+func (t *Tfstate) encryptInline(tfsf, key, tfvf string, dblEncrypt bool) ([]byte, error) {
 	plain, err := ioutil.ReadFile(tfsf)
 	if err != nil {
 		return nil, err
+	}
+
+	if !dblEncrypt {
+		r := regexp.MustCompile(thCryptoWrapRegExp)
+		m := r.FindSubmatch(plain)
+		if len(m) >= 1 {
+			return nil, fmt.Errorf(errMsgAlreadyEncrypted)
+		}
 	}
 
 	tfvu := &Tfvars{}
