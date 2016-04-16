@@ -58,7 +58,7 @@ const (
 	// ThNamedEncryptionKey is default Vault named encryption key
 	ThNamedEncryptionKey = "terrahelp"
 
-	errMsgAlreadyEncrypted = "Content has already been encrypted, not performing a double encryption!"
+	errMsgAlreadyEncrypted = "Content has already been encrypted, and double encryption has been disabled!"
 )
 
 // Valid encryption providers
@@ -221,7 +221,7 @@ func (t *Tfstate) encryptFileContent(f, key string, dblEncrypt bool) ([]byte, er
 		r := regexp.MustCompile(thCryptoWrapRegExp)
 		m := r.FindSubmatch(c)
 		if len(m) >= 1 {
-			return nil, fmt.Errorf(errMsgAlreadyEncrypted)
+			return nil, newCryptoWrapError(errMsgAlreadyEncrypted)
 		}
 	}
 
@@ -239,7 +239,7 @@ func (t *Tfstate) encryptInline(tfsf, key, tfvf string, dblEncrypt bool) ([]byte
 		r := regexp.MustCompile(thCryptoWrapRegExp)
 		m := r.FindSubmatch(plain)
 		if len(m) >= 1 {
-			return nil, fmt.Errorf(errMsgAlreadyEncrypted)
+			return nil, newCryptoWrapError(errMsgAlreadyEncrypted)
 		}
 	}
 

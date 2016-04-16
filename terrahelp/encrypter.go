@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
-	"fmt"
 	"io"
 
 	"bytes"
@@ -22,6 +21,21 @@ const (
 
 	thCryptoWrapInvalidMsg = "Unable to decrypt ciphertext, not wrapped as expected"
 )
+
+// A CryptoWrapError describes an error where a missing or invalid use of the
+// terrahelp wrapper value (i.e. @terrahelp-encrypted() ) prevents the encryption
+// or decryption being performed
+type CryptoWrapError struct {
+	msg string
+}
+
+func (e *CryptoWrapError) Error() string {
+	return "terrahelp encryption error : " + e.msg
+}
+
+func newCryptoWrapError(msg string) *CryptoWrapError {
+	return &CryptoWrapError{msg: msg}
+}
 
 // Encrypter defines the functionality required to be supported
 // by crypto backends which are to be used for encrypting and
@@ -42,13 +56,13 @@ func applyTHCryptoWrap(b []byte) []byte {
 func extractFromTHCryptoWrap(b []byte) (string, error) {
 	ciphertxt := string(b)
 	if ciphertxt != "" && !strings.HasPrefix(ciphertxt, thCryptoWrapPrefix) {
-		return "", fmt.Errorf(thCryptoWrapInvalidMsg)
+		return "", newCryptoWrapError(thCryptoWrapInvalidMsg)
 	}
 
 	r := regexp.MustCompile(thCryptoWrapRegExp)
 	m := r.FindStringSubmatch(ciphertxt)
 	if m == nil || len(m) < 1 || m[1] == "" {
-		return "", fmt.Errorf(thCryptoWrapInvalidMsg)
+		return "", newCryptoWrapError(thCryptoWrapInvalidMsg)
 	}
 
 	return m[1], nil

@@ -57,9 +57,10 @@ func TestVaultEncrypter_Decrypt_InvalidWrapper(t *testing.T) {
 	// When
 	for _, i := range invalids {
 		enc, err := vcu.Decrypt("testkey", []byte(i))
-		assert.Error(t, err)
 		assert.Empty(t, enc)
-		assert.Equal(t, thCryptoWrapInvalidMsg, err.Error(),
+		assert.Error(t, err)
+		assert.IsType(t, newCryptoWrapError(thCryptoWrapInvalidMsg), err)
+		assert.Contains(t, err.Error(), thCryptoWrapInvalidMsg,
 			fmt.Sprintf("%s not detected as invalid wrapper", i))
 	}
 }
@@ -159,9 +160,10 @@ func TestSimpleEncrypter_Decrypt_InvalidWrapper(t *testing.T) {
 	// When
 	for _, i := range invalids {
 		enc, err := vcu.Decrypt(encKey, []byte(i))
-		assert.Error(t, err)
 		assert.Empty(t, enc)
-		assert.Equal(t, thCryptoWrapInvalidMsg, err.Error(),
+		assert.Error(t, err)
+		assert.IsType(t, newCryptoWrapError(thCryptoWrapInvalidMsg), err)
+		assert.Contains(t, err.Error(), thCryptoWrapInvalidMsg,
 			fmt.Sprintf("%s not detected as invalid wrapper", i))
 	}
 }

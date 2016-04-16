@@ -99,8 +99,8 @@ func TestTfstate_VaultEncrypter_Encrypt_inlineDoubleEncryptError(t *testing.T) {
 	// When (2nd double encryption applied)
 	err = tu.Encrypt(ctx)
 	assert.Error(t, err, "Expected error if value already encrypted at least once")
-	assert.Equal(t, errMsgAlreadyEncrypted, err.Error(),
-		fmt.Sprint("not detected as already encrypted"))
+	assert.IsType(t, newCryptoWrapError(errMsgAlreadyEncrypted), err)
+	assert.Contains(t, err.Error(), errMsgAlreadyEncrypted, "not detected as invalid wrapper")
 }
 
 func TestTfstate_VaultEncrypter_Encrypt_inlineDoubleEncryptAllowed(t *testing.T) {
@@ -134,8 +134,8 @@ func TestTfstate_VaultEncrypter_Encrypt_DoubleEncryptError(t *testing.T) {
 	// When (2nd double encryption applied)
 	err = tu.Encrypt(ctx)
 	assert.Error(t, err, "Expected error if value already encrypted at least once")
-	assert.Equal(t, errMsgAlreadyEncrypted, err.Error(),
-		fmt.Sprint("not detected as already encrypted"))
+	assert.IsType(t, newCryptoWrapError(errMsgAlreadyEncrypted), err)
+	assert.Contains(t, err.Error(), errMsgAlreadyEncrypted, "not detected as invalid wrapper")
 }
 
 func TestTfstate_VaultEncrypter_Encrypt_DoubleEncryptAllowed(t *testing.T) {
@@ -307,7 +307,8 @@ func TestTfstate_VaultEncrypter_Decrypt_wholefile_prevEncryptedInline(t *testing
 
 	// Then
 	assert.Error(t, err, "Expected error if named key not valid")
-	assert.Equal(t, "Unable to decrypt ciphertext, not wrapped as expected", err.Error())
+	assert.Contains(t, err.Error(), thCryptoWrapInvalidMsg,
+		fmt.Sprint("not detected as invalid wrapper"))
 }
 
 func TestTfstate_VaultEncrypter_Encrypt_invalidNamedKey(t *testing.T) {

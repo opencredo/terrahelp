@@ -8,7 +8,10 @@ import (
 	"github.com/opencredo/terrahelp/terrahelp"
 )
 
-const errorExitCode = 1
+const (
+	cryptoWrapErrorExitCode = 1
+	otherErrorExitCode      = 2
+)
 
 func encryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 
@@ -258,6 +261,11 @@ func vaultPrepSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command
 func exitIfError(e error) {
 	if e != nil {
 		fmt.Printf("ERROR occured : %s\n", e)
-		os.Exit(errorExitCode)
+		switch e.(type) {
+		case *terrahelp.CryptoWrapError:
+			os.Exit(cryptoWrapErrorExitCode)
+		default:
+			os.Exit(otherErrorExitCode)
+		}
 	}
 }
