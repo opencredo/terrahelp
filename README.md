@@ -74,6 +74,11 @@ Test it
 Run it:
 
     terrahelp -v 
+    
+Want to cross compile it:
+
+    env GOOS=darwin GOARCH=amd64 go build -o=terrahelp-darwin-amd64
+    env GOOS=linux GOARCH=amd64 go build -o=terrahelp-linux-amd64
 
 [Travis-Image]: https://travis-ci.org/opencredo/terrahelp.svg?branch=master
 [Travis-Url]: https://travis-ci.org/opencredo/terrahelp
