@@ -63,7 +63,6 @@ type stdoutSim struct {
 func (s *stdoutSim) start() {
 	f, err := ioutil.TempFile("", "stdout-sim")
 	if err != nil {
-		panic(err)
 		s.t.Fatalf("Unabled to create tmp file to sim stdout %s", err)
 	}
 	s.simWriteFile, err = os.OpenFile(f.Name(), os.O_APPEND|os.O_CREATE|os.O_RDWR, 0777)
@@ -124,6 +123,7 @@ func (s *stdinSim) end() {
 		s.t.Fatal("Unabled to end stdin sim (it probably wasn't started)")
 	}
 	s.simReadFile.Close()
+	s.simWriteFile.Close()
 }
 
 func (s *stdinSim) write(in string) {
@@ -135,10 +135,10 @@ func (s *stdinSim) write(in string) {
 	if err != nil {
 		s.t.Fatalf("Unabled to flush tmp file simulating stdin %s", err)
 	}
-	err = s.simWriteFile.Close()
-	if err != nil {
-		s.t.Fatalf("Unabled to close tmp file simulating stdin %s", err)
-	}
+	//err = s.simWriteFile.Close()
+	//if err != nil {
+	//	s.t.Fatalf("Unabled to close tmp file simulating stdin %s", err)
+	//}
 }
 
 func defaultTestInlinePipedCryptoHandlerOpts(t *testing.T) (*CryptoHandlerOpts, *stdinSim, *stdoutSim) {
