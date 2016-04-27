@@ -1,5 +1,5 @@
 
-## 0.3.0 (Unreleased)
+## 0.3.0
 
 **Note: This release contains breaking changes!!** 
 

@@ -13,7 +13,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "terrahelp"
 	app.Usage = "Provides additional functions helpful with terraform development"
-	app.Version = "0.2.2-dev"
+	app.Version = "0.3.0"
 	app.Author = "https://github.com/opencredo OpenCredo - Nicki Watt"
 	app.Commands = []cli.Command{
 		vaultAutoConfigCommand(newTerraHelperFunc()),
