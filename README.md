@@ -18,26 +18,26 @@ For more details, and an example of how to use it please see [the example README
 Additionally the blog post [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault)
 also provides more details and background as well.
 
-NAME:
-   terrahelp - Provides additional functions helpful with terraform development
-
-USAGE:
-   terrahelp [global options] command [command options] [arguments...]
-   
-VERSION:
-   0.2.2-dev
-   
-AUTHOR(S):
-   https://github.com/opencredo OpenCredo - Nicki Watt 
-   
-COMMANDS:
-    vault-autoconfig	Auto configures Vault with a basic setup to support encrypt and decrypt actions.
-    encrypt		Uses configured provider to encrypt specified content
-    decrypt		Uses configured provider to decrypt specified content
-
-GLOBAL OPTIONS:
-   --help, -h		show help
-   --version, -v	print the version
+         NAME:
+            terrahelp - Provides additional functions helpful with terraform development
+         
+         USAGE:
+            terrahelp [global options] command [command options] [arguments...]
+            
+         VERSION:
+            0.2.2-dev
+            
+         AUTHOR(S):
+            https://github.com/opencredo OpenCredo - Nicki Watt 
+            
+         COMMANDS:
+             vault-autoconfig	Auto configures Vault with a basic setup to support encrypt and decrypt actions.
+             encrypt		Uses configured provider to encrypt specified content
+             decrypt		Uses configured provider to decrypt specified content
+         
+         GLOBAL OPTIONS:
+            --help, -h		show help
+            --version, -v	print the version
 
 
 ## Installation
