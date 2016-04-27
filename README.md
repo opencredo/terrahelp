@@ -10,27 +10,35 @@ providing supplementary functionality which can sometimes prove useful when work
 
 At present, it offers the following:
 
-* _Encryption & decryption of terraform state files_.
+* _Encryption & decryption functionality_.
 Run in either full or inline mode, and leveraging either a simple or [Vault](https://www.vaultproject.io) based encryption provider, this
-functionality provides the ability to encrypt and decrypt terraform.tfstate files. 
+functionality provides the ability to encrypt and decrypt files such as terraform.tfstate files, as well as piped in 
+output from commands such as terraform apply etc. 
 For more details, and an example of how to use it please see [the example README](https://github.com/opencredo/terrahelp/tree/master/examples/tfstate-encrypt). 
 Additionally the blog post [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault)
 also provides more details and background as well.
 
-        NAME:
-           terrahelp tfstate - Options for performing actions on the local tfstate files.
-        
-        USAGE:
-           terrahelp tfstate command [command options] [arguments...]
-        
-        COMMANDS:
-            vault-autoconfig	(Vault provider only) performs a very basic vault setup to allow Vault 
-                                provider to be used out of the box.
-            encrypt		        Uses configured provider to encrypt local .tfstate files
-            decrypt		        Uses configured provider to decrypt local .tfstate files
-        
-        OPTIONS:
-           --help, -h	show help
+NAME:
+   terrahelp - Provides additional functions helpful with terraform development
+
+USAGE:
+   terrahelp [global options] command [command options] [arguments...]
+   
+VERSION:
+   0.2.2-dev
+   
+AUTHOR(S):
+   https://github.com/opencredo OpenCredo - Nicki Watt 
+   
+COMMANDS:
+    vault-autoconfig	Auto configures Vault with a basic setup to support encrypt and decrypt actions.
+    encrypt		Uses configured provider to encrypt specified content
+    decrypt		Uses configured provider to decrypt specified content
+
+GLOBAL OPTIONS:
+   --help, -h		show help
+   --version, -v	print the version
+
 
 ## Installation
 

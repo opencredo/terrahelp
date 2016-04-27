@@ -14,34 +14,28 @@ func main() {
 	app.Name = "terrahelp"
 	app.Usage = "Provides additional functions helpful with terraform development"
 	app.Version = "0.2.2-dev"
-	app.Author = "https://github.com/opencredo (Nicki Watt)"
+	app.Author = "https://github.com/opencredo OpenCredo - Nicki Watt"
 	app.Commands = []cli.Command{
-		{
-			Name:  "tfstate",
-			Usage: "Options for performing actions on the local tfstate files.",
-			Subcommands: []cli.Command{
-				vaultPrepSubCommand(newTerraHelperFunc()),
-				encryptSubCommand(newTerraHelperFunc()),
-				decryptSubCommand(newTerraHelperFunc()),
-			},
-		},
+		vaultAutoConfigCommand(newTerraHelperFunc()),
+		encryptCommand(newTerraHelperFunc()),
+		decryptCommand(newTerraHelperFunc()),
 	}
 	app.Run(os.Args)
 }
 
-func newTerraHelperFunc() func(provider string) *terrahelp.Tfstate {
-	return func(provider string) *terrahelp.Tfstate {
+func newTerraHelperFunc() func(provider string) *terrahelp.CryptoHandler {
+	return func(provider string) *terrahelp.CryptoHandler {
 
 		switch {
 		case (provider == terrahelp.ThEncryptProviderSimple):
 			e := terrahelp.NewSimpleEncrypter()
-			return &terrahelp.Tfstate{Encrypter: e}
+			return &terrahelp.CryptoHandler{Encrypter: e}
 		case (provider == terrahelp.ThEncryptProviderVault):
 			e, err := terrahelp.NewVaultEncrypter()
 			if err != nil {
 				exitIfError(err)
 			}
-			return &terrahelp.Tfstate{Encrypter: e}
+			return &terrahelp.CryptoHandler{Encrypter: e}
 		}
 
 		exitIfError(fmt.Errorf("Invalid provider %s specified ", provider))

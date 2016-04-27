@@ -13,20 +13,27 @@ const (
 	otherErrorExitCode      = 2
 )
 
-func encryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
+func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Command {
 
-	ctxOpts := &terrahelp.TfstateOpts{}
+	var noBackup bool
+	var bkpExt string
+	ctxOpts := &terrahelp.CryptoHandlerOpts{}
 
 	return cli.Command{
 		Name:  "encrypt",
-		Usage: "Uses configured provider to encrypt local .tfstate files",
-		Description: "Using either the 'simple' (default) or 'vault' provider, encrypt will ensure that the local terraform.tfstate\n" +
-			"   files are encrypted in either full, or inline mode. In general it is expected that: \n" +
+		Usage: "Uses configured provider to encrypt specified content",
+		Description: "Using either the 'simple' (default) or 'vault' provider, encrypt will ensure that the relavent content\n" +
+			"   is encrypted in either full, or inline mode. You may want to filter out certain sensitive content from the\n" +
+			"   output of terraform commands such as a 'terraform plan' or 'terraform apply'. Encrypt will automaticall detect \n" +
+			"   when you are piping input through this command and will then simply apply the encryption filter on the stdin\n " +
+			"   data, writing the result to stdout. \n" +
+			"   Unless data is specifically piped into this command as described above, it is assumed that the content to be\n" +
+			"   encrypted is the local .tfstate files. In general it is expected that the following process will occur: \n" +
 			"   * The standard terraform commands will be performed i.e. \n" +
 			"       terraform plan\n" +
 			"       terraform apply\n" +
-			"   * Then when happy, the encryption applied i.e.\n" +
-			"       terrahelp tfstate encrypt\n" +
+			"   * Then when happy, the encryption applied on the tfstate files i.e.\n" +
+			"       terrahelp encrypt\n" +
 			"   * Finally, if required, these files can then be checked in to version control.\n\n" +
 			"   The desired 'provider' and well as 'mode' can be supplied as CLI arguments, or via the TH_ENCRYPTION_PROVIDER \n" +
 			"   and TH_ENCRYPTION_MODE environment variables. Encrypted values will always conform to the following format: \n" +
@@ -34,14 +41,14 @@ func encryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 
 			"   Encryption modes: full,inline  \n" +
 			"   -----------------------------  \n" +
-			"   The default encryption mode is 'full' which means the full content of the tfstate files will be encrypted. \n" +
-			"   Quite often however it is desirable to only encrypt the sensitive aspects within the tfstate files and \n" +
-			"   not the whole file, this is where the inline mode comes in. \n" +
+			"   The default encryption mode is 'full' which means the full content (of for example the .tfstate files) \n" +
+			"   will be encrypted. Quite often however it is desirable to only encrypt certain sensitive fragments within \n" +
+			"   the data, and not simply the whole content as a single unit and this is where the inline mode comes in. \n" +
 			"   Inline encrypting works by detecting sensitive values within the state files and then replaces them with \n" +
 			"   encrypted values. Terrahelp assumes all sensitive values are defined as values within the terraform.tfvars \n" +
 			"   file, which just by way of recap should NEVER be checked into version control! Terrahelp then uses the  \n" +
 			"   terraform.tfvars file to identify which values are considered sensitive, searches for any occurence \n" +
-			"   of these values within the tfstate files and essentially does a find and replace of all the sensitive values \n" +
+			"   of these values within the provided content and essentially does a find and replace of all the sensitive values \n" +
 			"   with appropriately encrypted ones. \n\n" +
 
 			"   Simple provider \n" +
@@ -66,8 +73,39 @@ func encryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 			"   details about what encryption algorithm to use. This encrypt command expects you to have \n" +
 			"   already setup and registered a named encryption key which will be used here. If not explicitly\n" +
 			"   specified, then 'terrahelp' i.e. /transit/key/terrahelp is assumed as default. Note you can use the \n" +
-			"   terrahelp tfstate vault-autoconfig command to auto register and generate a new key against this default \n" +
-			"   named key for you if not already done. \n\n",
+			"   terrahelp vault-autoconfig command to auto register and generate a new key against this default \n" +
+			"   named key for you if not already done. \n\n" +
+
+			"   EXIT STATUS \n" +
+			"   ----------- \n" +
+			"   The encrypt command exits with one of the following values: \n" +
+			"        0     Encryption succeeded. \n" +
+			"        1     Error encrypting due to terrahelp wrapper issues or violations (e.g. double encrypt not permitted). \n" +
+			"        >1    Any other error occurred. \n\n" +
+
+			"   EXAMPLES \n" +
+			"   ----------- \n" +
+			"   To fully encrypt the default default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
+
+			"        $  terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 \n\n" +
+
+			"   To inline encrypt the default default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
+
+			"        $  terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline\n\n" +
+
+			"   To inline encrypt the output of a terraform plan using simple encryption:\n\n" +
+
+			"        $  terraform plan | terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline\n\n" +
+
+			"   To fully encrypt the default default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
+
+			"        $  terrahelp encrypt -provider=vault vault-namedkey=my-vault-named-key \n\n" +
+
+			"   To inline encrypt the default default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
+
+			"        $  terrahelp encrypt -provider=vault vault-namedkey=my-vault-named-key -mode=inline\n\n" +
+
+			"\n",
 
 		Flags: []cli.Flag{
 			cli.StringFlag{
@@ -84,17 +122,9 @@ func encryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 				Usage:       fmt.Sprintf("Encryption mode (inline|full) to use (defaults to full)"),
 				Destination: &ctxOpts.EncMode,
 			},
-			cli.StringFlag{
-				Name:        "state",
-				Value:       terrahelp.TfstateFilename,
-				Usage:       "Terraform state file to encrypt (defaults to " + terrahelp.TfstateFilename + ")",
-				Destination: &ctxOpts.TfstateFile,
-			},
-			cli.StringFlag{
-				Name:        "statebkp",
-				Value:       terrahelp.TfstateBkpFilename,
-				Usage:       "Backup terraform state file to encrypt (defaults to " + terrahelp.TfstateBkpFilename + ")",
-				Destination: &ctxOpts.TfStateBkpFile,
+			cli.StringSliceFlag{
+				Name:  "file",
+				Usage: fmt.Sprintf("File(s) to encrypt - can be specified multiple times (defaults to include %s and %s)", terrahelp.TfstateFilename, terrahelp.TfstateBkpFilename),
 			},
 			cli.StringFlag{
 				Name:        "tfvars",
@@ -106,12 +136,12 @@ func encryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 				Name:        "bkpext",
 				Value:       terrahelp.ThBkpExtension,
 				Usage:       "Extension to use when creating backups (defaults to " + terrahelp.ThBkpExtension + ")",
-				Destination: &ctxOpts.BkpExt,
+				Destination: &bkpExt,
 			},
 			cli.BoolFlag{
 				Name:        "nobackup",
 				Usage:       "Suppress the creation of backup files before encrypting (defaults to false)",
-				Destination: &ctxOpts.NoBackup,
+				Destination: &noBackup,
 			},
 			cli.BoolTFlag{
 				Name:        "dblencrypt",
@@ -136,34 +166,72 @@ func encryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 			th := f(ctxOpts.EncProvider)
 			err := ctxOpts.ValidateForEncryptDecrypt()
 			exitIfError(err)
+			verifyStringSliceFileDefault(c, ctxOpts, noBackup, bkpExt)
 			err = th.Encrypt(ctxOpts)
 			exitIfError(err)
 		},
 	}
 }
 
-func decryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
+func decryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Command {
 
-	ctxOpts := &terrahelp.TfstateOpts{}
+	var noBackup bool
+	var bkpExt string
+	ctxOpts := &terrahelp.CryptoHandlerOpts{}
 
 	return cli.Command{
 		Name:  "decrypt",
-		Usage: "Uses configured provider to decrypt local .tfstate files",
-		Description: "Using either the 'simple' (default) or 'vault' provider, decrypt will ensure that the local \n" +
-			"   terraform.tfstate files are decrypted and restored back to a state where terraform can operate \n" +
-			"   on them again. You will have previously already encryped the files with either the 'simple' or \n" +
-			"   'vault' provider, and using 'full' or 'inline' mode (see encrypt help for more info). \n" +
-			"   This command essentially does the reverse of the encrypt command, and in general it is expected that: \n" +
+		Usage: "Uses configured provider to decrypt specified content",
+		Description: "Using either the 'simple' (default) or 'vault' provider, decrypt will ensure that the relavent content\n" +
+			"   is decrypted and restored back to its pre-encrypted state. You may previously have filtered, and possibly saved\n" +
+			"   as a file, the output of terraform commands such as a 'terraform plan' or 'terraform apply' which may have contained\n" +
+			"   certain sensitive content. As with the encrypt command, this can be piped into the decrypt command  \n" +
+			"   which will then simply apply the decryption filter on the stdin data, writing the result to stdout. \n" +
+			"   Unless data is specifically piped into this command as described above, it is assumed that the content to be\n" +
+			"   decrypted is the local .tfstate files. This command essentially does the reverse of the encrypt command, and in " +
+			"   general it is expected that:  \n" +
+
 			"   * The encrypted versions of the terraform.tfstate files will be obtained \n" +
 			"   * The appropriate decryption applied i.e.\n" +
-			"       terrahelp tfstate decrypt\n" +
+			"       terrahelp decrypt\n" +
 			"   * The standard terraform commands can then be performed i.e. \n" +
 			"       terraform plan\n" +
 			"       terraform apply\n\n" +
 
 			"   Note: You need to ensure you use the same 'provider' and 'mode' that was used when the files were \n" +
 			"   encrypted in the first place. The 'provider' and well as 'mode' can be supplied as CLI arguments,  \n" +
-			"   or via the TH_ENCRYPTION_PROVIDER and TH_ENCRYPTION_MODE environment variables. \n\n",
+			"   or via the TH_ENCRYPTION_PROVIDER and TH_ENCRYPTION_MODE environment variables. \n\n" +
+
+			"   EXIT STATUS \n" +
+			"   ----------- \n" +
+			"   The decrypt command exits with one of the following values: \n" +
+			"        0     Decryption succeeded. \n" +
+			"        1     Error decrypting due to terrahelp wrapper issues or violations (e.g. not prev encrypted). \n" +
+			"        >1    Any other error occurred. \n\n" +
+
+			"   EXAMPLES \n" +
+			"   ----------- \n" +
+			"   To fully decrypt the default default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
+
+			"        $  terrahelp decrypt -simple-key=AES256Key-32Characters0987654321 \n\n" +
+
+			"   To inline decrypt the default default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
+
+			"        $  terrahelp decrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline\n\n" +
+
+			"   To inline decrypt the previously saved output of a terraform plan using simple encryption:\n\n" +
+
+			"        $  cat plan-out.tfplan | terrahelp decrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline\n\n" +
+
+			"   To fully decrypt the default default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
+
+			"        $  terrahelp decrypt -provider=vault vault-namedkey=my-vault-named-key \n\n" +
+
+			"   To inline decrypt the default default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
+
+			"        $  terrahelp decrypt -provider=vault vault-namedkey=my-vault-named-key -mode=inline\n\n" +
+
+			"\n",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "provider",
@@ -179,28 +247,20 @@ func decryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 				Usage:       fmt.Sprintf("Encryption mode (inline|full) to use (defaults to full)"),
 				Destination: &ctxOpts.EncMode,
 			},
-			cli.StringFlag{
-				Name:        "state",
-				Value:       terrahelp.TfstateFilename,
-				Usage:       "Terraform state file to decrypt (defaults to " + terrahelp.TfstateFilename + ")",
-				Destination: &ctxOpts.TfstateFile,
-			},
-			cli.StringFlag{
-				Name:        "statebkp",
-				Value:       terrahelp.TfstateBkpFilename,
-				Usage:       "Backup terraform state file to decrypt (defaults to " + terrahelp.TfstateBkpFilename + ")",
-				Destination: &ctxOpts.TfStateBkpFile,
+			cli.StringSliceFlag{
+				Name:  "file",
+				Usage: fmt.Sprintf("File(s) to encrypt - can be specified multiple times (defaults to include %s and %s)", terrahelp.TfstateFilename, terrahelp.TfstateBkpFilename),
 			},
 			cli.StringFlag{
 				Name:        "bkpext",
 				Value:       terrahelp.ThBkpExtension,
 				Usage:       "Extension to use when creating backups (defaults to " + terrahelp.ThBkpExtension + ")",
-				Destination: &ctxOpts.BkpExt,
+				Destination: &bkpExt,
 			},
 			cli.BoolFlag{
 				Name:        "nobackup",
 				Usage:       "Suppress the creation of backup files before decrypting (defaults to false)",
-				Destination: &ctxOpts.NoBackup,
+				Destination: &noBackup,
 			},
 			cli.StringFlag{
 				Name:        "simple-key",
@@ -220,6 +280,7 @@ func decryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 			th := f(ctxOpts.EncProvider)
 			err := ctxOpts.ValidateForEncryptDecrypt()
 			exitIfError(err)
+			verifyStringSliceFileDefault(c, ctxOpts, noBackup, bkpExt)
 			err = th.Decrypt(ctxOpts)
 			exitIfError(err)
 		},
@@ -227,14 +288,14 @@ func decryptSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
 
 }
 
-func vaultPrepSubCommand(f func(provider string) *terrahelp.Tfstate) cli.Command {
+func vaultAutoConfigCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Command {
 
-	ctxOpts := &terrahelp.TfstateOpts{}
+	ctxOpts := &terrahelp.CryptoHandlerOpts{}
 
 	return cli.Command{
 		Name:  "vault-autoconfig",
-		Usage: "(Vault provider only) performs a very basic vault setup to allow Vault provider to be used out of the box.",
-		Description: "This is really a one off helper command to help get off the ground and running quickly with Vault. \n" +
+		Usage: "Auto configures Vault with a basic setup to support encrypt and decrypt actions.",
+		Description: "This is really a one off helper command to help get off the ground and running quickly with the Vault provider. \n" +
 			"   Essentially it ensures that the transit backend is mounted (if not\n" +
 			"   already), and that the named encryption key (defaults to /transit/key/terrahelp) is generated and registered \n" +
 			"   The vault provider uses this named key as part of the encrypt and decrypt functionality. \n",
@@ -268,4 +329,39 @@ func exitIfError(e error) {
 			os.Exit(otherErrorExitCode)
 		}
 	}
+}
+
+// Unfortunately the StringSliceFlag struct does not support setting a
+// destination at present as  with the other flags and has some issues
+// if you specify a default value directly
+// (see https://github.com/codegangsta/cli/issues/160,
+// https://github.com/codegangsta/cli/issues/350) so we do it here
+// ourselves, as well as transforming the result into an appropriate
+// array of CryptoItem's
+func verifyStringSliceFileDefault(c *cli.Context,
+	ctxOpts *terrahelp.CryptoHandlerOpts,
+	noBackup bool, bkpExt string) {
+	if useStdInAsInput() {
+		ctxOpts.CryptoItems = []terrahelp.CryptoItem{terrahelp.NewStdStreamCryptoItem()}
+		return
+	}
+
+	files := c.StringSlice("file")
+	if files == nil || len(files) == 0 {
+		files = []string{terrahelp.TfstateFilename, terrahelp.TfstateBkpFilename}
+	}
+
+	ctxOpts.CryptoItems = []terrahelp.CryptoItem{}
+	for _, f := range files {
+		ctxOpts.CryptoItems = append(ctxOpts.CryptoItems,
+			terrahelp.NewFileCryptoItem(f, !noBackup, bkpExt))
+	}
+}
+
+func useStdInAsInput() bool {
+
+	info, _ := os.Stdin.Stat()
+
+	// Currently only detecting input via pipes
+	return (info.Mode() & os.ModeNamedPipe) == os.ModeNamedPipe
 }

@@ -1,4 +1,4 @@
-## Terrahelp Example - tfstate encrypt / decrypt
+## Terrahelp Example - Encrypt / decrypt
 
 This example contains a very simple terraform setup composed entirely of 
 local resources (e.g. template resource) and exists in order to demonstrate how
@@ -13,11 +13,84 @@ so please use this if you need more info.
 Additionally you can read this corresponding blog which gives a more detailed explanation
 of this functionality and its usage: [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault).
 
-
-### Simple inline encryption
+### Simple inline encryption of terraform output
 
 This example will demonstrate _inline_ encryption and decryption using the _simple_ encryption provider
-and will use explicit command line arguments.
+where we will pipe the content in directly. This specific example uses the basic command line arguments
+as opposed to environment variables to control the process
+
+* Run a `terraform plan` as normal
+
+        terraform plan
+        
+* Inspect the result which should look something like below:        
+        
+        Refreshing Terraform state prior to plan...
+        
+        The Terraform execution plan has been generated and is shown below.
+        Resources are shown in alphabetical order for quick scanning. Green resources
+        will be created (or destroyed and then created if an existing resource
+        exists), yellow resources are being changed in-place, and red resources
+        will be destroyed.
+        
+        Note: You didn't specify an "-out" parameter to save this plan, so when
+        "apply" is called, Terraform can't guarantee this is what will execute.
+        
+        + template_file.example
+            rendered:  "" => "<computed>"
+            template:  "" => "\nmsg1 = ${msg1}\nmsg2 = ${msg2}\nmsg3 = ${msg3}"
+            vars.#:    "" => "3"
+            vars.msg1: "" => "sensitive-value-1-AK#%DJGHS*G"
+            vars.msg2: "" => "normal value 1"
+            vars.msg3: "" => "sensitive-value-3-//dfhs//"
+        
+        
+        Plan: 1 to add, 0 to change, 0 to destroy.
+
+* Run the same command, but pipe the output into the terrahelp encrypt command. 
+
+        terraform plan | terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline 
+
+* The result should now look something like below:
+
+        Refreshing Terraform state prior to plan...
+        
+        
+        The Terraform execution plan has been generated and is shown below.
+        Resources are shown in alphabetical order for quick scanning. Green resources
+        will be created (or destroyed and then created if an existing resource
+        exists), yellow resources are being changed in-place, and red resources
+        will be destroyed.
+        
+        Note: You didn't specify an "-out" parameter to save this plan, so when
+        "apply" is called, Terraform can't guarantee this is what will execute.
+        
+        + template_file.example
+            rendered:  "" => "<computed>"
+            template:  "" => "\nmsg1 = ${msg1}\nmsg2 = ${msg2}\nmsg3 = ${msg3}"
+            vars.#:    "" => "3"
+            vars.msg1: "" => "@terrahelp-encrypted(Qwkbpytfx0br0Wh7fH6tfA6T1H+0cWnUKSkYnYrn8yd9lmZUt1vMp90uojPe)"
+            vars.msg2: "" => "normal value 1"
+            vars.msg3: "" => "@terrahelp-encrypted(FulrH6WwiDTNqPtVaWtHtJip+igD2hUSxWsabShX4NrF6tuKARD/R5fG)"
+        
+        
+        Plan: 1 to add, 0 to change, 0 to destroy.
+
+* For decryption, you could pipe the output again into the decrypt command, however more than
+  likely, you will probably want to save the results into a file and then decrypt that. The
+  sequence of commands to do that would be something as follows:
+  
+        terraform plan -out=my-infra.plan
+        
+        terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline -file=my-infra.plan
+        
+        terrahelp decrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline -file=my-infra.plan        
+
+### Simple inline encryption of tfstate files
+
+This example will demonstrate _inline_ encryption and decryption using the _simple_ encryption provider
+and will use explicit command line arguments (an example using environment variables is shown with the
+Vault provider example).
 
 * Run terraform as normal
 
@@ -63,7 +136,7 @@ This should look something like below:
 
 * Encrypt
 
-        terrahelp tfstate encrypt -inline=true -simple-key="AES256Key-32Characters0987654321" 
+        terrahelp encrypt -inline=true -simple-key="AES256Key-32Characters0987654321" 
 
 * Inspect `terraform.tfstate` content after encryption. Note how all the sensitive values, as 
 detected in the `terraform.tfvars` file, have now been replaced with encrypted versions. The
@@ -104,13 +177,13 @@ content should look something like that below:
 
 * To get your normal `terraform.tfstate` content back, decrypt
 
-        terrahelp tfstate decrypt -inline=true -simple-key="AES256Key-32Characters0987654321" 
+        terrahelp decrypt -inline=true -simple-key="AES256Key-32Characters0987654321" 
 
 * Again verify `terraform.tfstate` content after decryption. This should now look exactly the same
 as it did before doing the encryption
 
 
-### Vault full file encryption
+### Vault full encryption of tfstate files
 
 This example will demonstrate _full_ encryption and decryption using the _vault_ encryption provider
 and will use environment variables rather than explicit command line arguments to control the process.
@@ -132,7 +205,7 @@ here, then open up a new terminal, and for experimentation purposes, simply run 
         export TH_ENCRYPTION_PROVIDER="vault"
         export TH_ENCRYPTION_MODE="full"
         export TH_VAULT_NAMED_KEY="examplekey"
-        terrahelp tfstate vault-autoconfig
+        terrahelp vault-autoconfig
 
 * Run terraform as normal and inspect the terraform.tfstate content before encryption is applied
 
@@ -178,7 +251,7 @@ This should look something like below:
 
 * Encrypt
 
-         terrahelp tfstate encrypt  
+         terrahelp encrypt  
 
 * Inspect `terraform.tfstate` content after encryption. Note how all the sensitive values, as 
 detected in the terraform.tfvars file, have now been replaced with encrypted versions, and will
@@ -194,7 +267,7 @@ look something like below:
 
 * To get your normal tfstate content back, decrypt
 
-        terrahelp tfstate decrypt  
+        terrahelp decrypt  
 
 * Verify `terraform.tfstate` contents after decryption. This should now look exactly the same
 as it did before doing the encryption
