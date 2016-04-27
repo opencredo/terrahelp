@@ -1,7 +1,6 @@
 package terrahelp
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -47,26 +46,7 @@ func (p *StreamCryptoItem) validateCryptoItem() error {
 }
 
 func (p *StreamCryptoItem) readFromSource() ([]byte, error) {
-	s := bufio.NewScanner(p.in)
-	var out []byte
-	var l int
-	for s.Scan() {
-		out = append(out, s.Bytes()...)
-		l = len(s.Bytes())
-		out = append(out, []byte("\n")...)
-	}
-
-	// remove the extra \n if necessary
-	if l > 0 {
-		out = out[:len(out)-1]
-	}
-
-	err := s.Err()
-	if err != nil {
-		return nil, err
-	}
-
-	return out, nil
+	return ioutil.ReadAll(p.in)
 }
 
 func (p *StreamCryptoItem) writeToTarget(b []byte) error {
@@ -103,10 +83,16 @@ func (f *FileCryptoItem) validateCryptoItem() error {
 }
 
 func (f *FileCryptoItem) readFromSource() ([]byte, error) {
+	if err := f.validateCryptoItem(); err != nil {
+		return nil, err
+	}
 	return ioutil.ReadFile(f.filename)
-
 }
+
 func (f *FileCryptoItem) writeToTarget(b []byte) error {
+	if err := f.validateCryptoItem(); err != nil {
+		return err
+	}
 	return ioutil.WriteFile(f.filename, b, 0777)
 }
 func (f *FileCryptoItem) beforeCryptoAction() error {

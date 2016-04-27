@@ -135,10 +135,6 @@ func (s *stdinSim) write(in string) {
 	if err != nil {
 		s.t.Fatalf("Unabled to flush tmp file simulating stdin %s", err)
 	}
-	//err = s.simWriteFile.Close()
-	//if err != nil {
-	//	s.t.Fatalf("Unabled to close tmp file simulating stdin %s", err)
-	//}
 }
 
 func defaultTestInlinePipedCryptoHandlerOpts(t *testing.T) (*CryptoHandlerOpts, *stdinSim, *stdoutSim) {
