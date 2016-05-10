@@ -33,8 +33,8 @@ func newInitVaultEncryptableCrytoHandler(t *testing.T, key string) (*CryptoHandl
 func defaultVaultEncryptableCryptoHandlerOpts(t *testing.T, noBkp bool) *CryptoHandlerOpts {
 	ctx := NewDefaultCryptoHandlerOpts()
 	ctx.EncProvider = ThEncryptProviderVault
-	ctx.CryptoItems[0].(*FileCryptoItem).bkp = !noBkp
-	ctx.CryptoItems[1].(*FileCryptoItem).bkp = !noBkp
+	ctx.TransformItems[0].(*FileTransformable).bkp = !noBkp
+	ctx.TransformItems[1].(*FileTransformable).bkp = !noBkp
 	return ctx
 }
 
@@ -42,8 +42,8 @@ func defaultTestInlineCryptoHandlerOpts(t *testing.T, noBkp bool) *CryptoHandler
 	ctx := NewDefaultCryptoHandlerOpts()
 	ctx.EncProvider = ThEncryptProviderVault
 	ctx.EncMode = ThEncryptModeInline
-	ctx.CryptoItems[0].(*FileCryptoItem).bkp = !noBkp
-	ctx.CryptoItems[1].(*FileCryptoItem).bkp = !noBkp
+	ctx.TransformItems[0].(*FileTransformable).bkp = !noBkp
+	ctx.TransformItems[1].(*FileTransformable).bkp = !noBkp
 	return ctx
 }
 
@@ -145,8 +145,8 @@ func defaultTestInlinePipedCryptoHandlerOpts(t *testing.T) (*CryptoHandlerOpts, 
 	stdinSim.start()
 	stdoutSim := newStdoutSim(t)
 	stdoutSim.start()
-	ctx.CryptoItems = []CryptoItem{
-		NewStreamCryptoItem(stdinSim.simReadFile, stdoutSim.simWriteFile)}
+	ctx.TransformItems = []Transformable{
+		NewStreamTransformable(stdinSim.simReadFile, stdoutSim.simWriteFile)}
 	return ctx, stdinSim, stdoutSim
 }
 
