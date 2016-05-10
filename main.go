@@ -19,6 +19,7 @@ func main() {
 		vaultAutoConfigCommand(newTerraHelperFunc()),
 		encryptCommand(newTerraHelperFunc()),
 		decryptCommand(newTerraHelperFunc()),
+		maskCommand(),
 	}
 	app.Run(os.Args)
 }

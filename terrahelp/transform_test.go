@@ -31,7 +31,7 @@ and here
 
 hasNewLinesInMiddle`
 
-func TestStreamCryptoItem_readFromSource(t *testing.T) {
+func TestStreamTransformable_read(t *testing.T) {
 	srcScenarios := []string{
 		endsWith1ExplicitNewLine,
 		endsWith2ExplicitNewLines,
@@ -42,10 +42,10 @@ func TestStreamCryptoItem_readFromSource(t *testing.T) {
 	for _, s := range srcScenarios {
 		// Given
 		r := strings.NewReader(s)
-		sci := NewStreamCryptoItem(r, nil)
+		sci := NewStreamTransformable(r, nil)
 
 		// When
-		b, err := sci.readFromSource()
+		b, err := sci.read()
 
 		// Then
 		assert.NoError(t, err)
@@ -54,13 +54,13 @@ func TestStreamCryptoItem_readFromSource(t *testing.T) {
 
 }
 
-func TestFileCryptoItem_readFromSource_DirError(t *testing.T) {
+func TestFileTransformable_read_DirError(t *testing.T) {
 
 	f, err := ioutil.TempDir("", "testdir")
-	sci := NewFileCryptoItem(f, false, "")
+	sci := NewFileTransformable(f, false, "")
 
 	// When
-	_, err = sci.readFromSource()
+	_, err = sci.read()
 
 	// Then
 	assert.EqualError(t, err, fmt.Sprintf("%s must be a valid file", f))

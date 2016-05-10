@@ -17,8 +17,7 @@ type CryptoHandler struct {
 // CryptoHandlerOpts holds the specific options detailing how, and on what
 // to perform the cryptographic actions.
 type CryptoHandlerOpts struct {
-	CryptoItems        []CryptoItem
-	TfvarsFilename     string
+	*TransformOpts
 	EncProvider        string
 	EncMode            string
 	NamedEncKey        string
@@ -30,11 +29,11 @@ type CryptoHandlerOpts struct {
 // default values set
 func NewDefaultCryptoHandlerOpts() *CryptoHandlerOpts {
 	return &CryptoHandlerOpts{
-		EncProvider: ThEncryptProviderSimple,
-		CryptoItems: []CryptoItem{
-			NewFileCryptoItem(TfstateFilename, true, ThBkpExtension),
-			NewFileCryptoItem(TfstateBkpFilename, true, ThBkpExtension)},
-		TfvarsFilename:     TfvarsFilename,
+		TransformOpts: &TransformOpts{TransformItems: []Transformable{
+			NewFileTransformable(TfstateFilename, true, ThBkpExtension),
+			NewFileTransformable(TfstateBkpFilename, true, ThBkpExtension)},
+			TfvarsFilename: TfvarsFilename},
+		EncProvider:        ThEncryptProviderSimple,
 		NamedEncKey:        ThNamedEncryptionKey,
 		SimpleKey:          "",
 		AllowDoubleEncrypt: true,
@@ -50,8 +49,7 @@ const (
 	ThBkpExtension     = ".terrahelpbkp"
 
 	// ThNamedEncryptionKey is default Vault named encryption key
-	ThNamedEncryptionKey = "terrahelp"
-
+	ThNamedEncryptionKey   = "terrahelp"
 	errMsgAlreadyEncrypted = "Content has already been encrypted, and double encryption has been disabled!"
 )
 
@@ -66,6 +64,8 @@ const (
 	ThEncryptModeInline = "inline"
 	ThEncryptModeFull   = "full"
 )
+
+type cryptoTransformAction func(*CryptoHandlerOpts, Transformable) error
 
 func (o *CryptoHandlerOpts) getEncryptionKey() string {
 	switch {
@@ -108,29 +108,29 @@ func (t *CryptoHandler) Init(ctx *CryptoHandlerOpts) error {
 // are encrypted as per the configured options supplied
 func (t *CryptoHandler) Encrypt(ctx *CryptoHandlerOpts) error {
 	return t.applyCryptoAction(ctx,
-		func(ctx *CryptoHandlerOpts, ci CryptoItem) error { return t.encrypt(ctx, ci) })
+		func(ctx *CryptoHandlerOpts, ci Transformable) error { return t.encrypt(ctx, ci) })
 }
 
 // Decrypt will ensure appropriate aspects of the input content
 // are decrypted as per the configured options supplied
 func (t *CryptoHandler) Decrypt(ctx *CryptoHandlerOpts) error {
 	return t.applyCryptoAction(ctx,
-		func(ctx *CryptoHandlerOpts, ci CryptoItem) error { return t.decrypt(ctx, ci) })
+		func(ctx *CryptoHandlerOpts, ci Transformable) error { return t.decrypt(ctx, ci) })
 }
 
 // applyCryptoAction will loop through the various items to be encrypted/decrypted, first
 // validating them, and if OK, proceeds to send them on for the actual encryption/decryption
-func (t *CryptoHandler) applyCryptoAction(ctx *CryptoHandlerOpts, cryptoFunc cryptoItemAction) error {
+func (t *CryptoHandler) applyCryptoAction(ctx *CryptoHandlerOpts, cryptoFunc cryptoTransformAction) error {
 	// Do first pass over all items to be encrypted/decrypted to ensure they are
 	// all valid before we begin
-	for _, ci := range ctx.CryptoItems {
-		if err := ci.validateCryptoItem(); err != nil {
+	for _, ci := range ctx.TransformItems {
+		if err := ci.validate(); err != nil {
 			log.Printf("Not a valid item for encryption: %v\n", err)
 			return err
 		}
 	}
 
-	for _, ci := range ctx.CryptoItems {
+	for _, ci := range ctx.TransformItems {
 		err := cryptoFunc(ctx, ci)
 		if err != nil {
 			return err
@@ -139,17 +139,17 @@ func (t *CryptoHandler) applyCryptoAction(ctx *CryptoHandlerOpts, cryptoFunc cry
 	return nil
 }
 
-func (t *CryptoHandler) encrypt(ctx *CryptoHandlerOpts, ci CryptoItem) error {
+func (t *CryptoHandler) encrypt(ctx *CryptoHandlerOpts, ci Transformable) error {
 
 	// Do any pre encryption actions (e.g. backup)
 	// if required
-	err := ci.beforeCryptoAction()
+	err := ci.beforeTransform()
 	if err != nil {
 		return err
 	}
 
 	// Read, encrypt, then write out result
-	in, err := ci.readFromSource()
+	in, err := ci.read()
 	if err != nil {
 		return err
 	}
@@ -157,7 +157,7 @@ func (t *CryptoHandler) encrypt(ctx *CryptoHandlerOpts, ci CryptoItem) error {
 	if err != nil {
 		return err
 	}
-	return ci.writeToTarget(b)
+	return ci.write(b)
 }
 
 func (t *CryptoHandler) encryptBytes(ctx *CryptoHandlerOpts, in []byte) ([]byte, error) {
@@ -167,17 +167,17 @@ func (t *CryptoHandler) encryptBytes(ctx *CryptoHandlerOpts, in []byte) ([]byte,
 	return t.encryptFullContent(in, ctx.getEncryptionKey(), ctx.AllowDoubleEncrypt)
 }
 
-func (t *CryptoHandler) decrypt(ctx *CryptoHandlerOpts, ci CryptoItem) error {
+func (t *CryptoHandler) decrypt(ctx *CryptoHandlerOpts, ci Transformable) error {
 
 	// Do any pre decryption actions (e.g. backup)
 	// if required
-	err := ci.beforeCryptoAction()
+	err := ci.beforeTransform()
 	if err != nil {
 		return err
 	}
 
 	// Read, decrypt, then write out result
-	ciphertext, err := ci.readFromSource()
+	ciphertext, err := ci.read()
 	if err != nil {
 		return err
 	}
@@ -187,7 +187,7 @@ func (t *CryptoHandler) decrypt(ctx *CryptoHandlerOpts, ci CryptoItem) error {
 	}
 
 	// Write out plaintext values again
-	return ci.writeToTarget(plain)
+	return ci.write(plain)
 }
 
 func (t *CryptoHandler) decryptBytes(ctx *CryptoHandlerOpts, in []byte) ([]byte, error) {
@@ -234,8 +234,8 @@ func (t *CryptoHandler) encryptInline(plain []byte, key, tfvf string, dblEncrypt
 		}
 	}
 
-	tfvu := &Tfvars{}
-	inlineCreds, err := tfvu.ExtractSensitiveVals(tfvf)
+	tfvu := NewTfVars(tfvf)
+	inlineCreds, err := tfvu.Values()
 	if err != nil {
 		return nil, err
 	}

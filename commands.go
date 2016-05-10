@@ -17,7 +17,7 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 
 	var noBackup bool
 	var bkpExt string
-	ctxOpts := &terrahelp.CryptoHandlerOpts{}
+	ctxOpts := &terrahelp.CryptoHandlerOpts{TransformOpts: &terrahelp.TransformOpts{}}
 
 	return cli.Command{
 		Name:  "encrypt",
@@ -166,7 +166,7 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 			th := f(ctxOpts.EncProvider)
 			err := ctxOpts.ValidateForEncryptDecrypt()
 			exitIfError(err)
-			verifyStringSliceFileDefault(c, ctxOpts, noBackup, bkpExt)
+			verifyStringSliceFileDefault(c, ctxOpts.TransformOpts, true, noBackup, bkpExt)
 			err = th.Encrypt(ctxOpts)
 			exitIfError(err)
 		},
@@ -177,7 +177,7 @@ func decryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 
 	var noBackup bool
 	var bkpExt string
-	ctxOpts := &terrahelp.CryptoHandlerOpts{}
+	ctxOpts := &terrahelp.CryptoHandlerOpts{TransformOpts: &terrahelp.TransformOpts{}}
 
 	return cli.Command{
 		Name:  "decrypt",
@@ -280,7 +280,7 @@ func decryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 			th := f(ctxOpts.EncProvider)
 			err := ctxOpts.ValidateForEncryptDecrypt()
 			exitIfError(err)
-			verifyStringSliceFileDefault(c, ctxOpts, noBackup, bkpExt)
+			verifyStringSliceFileDefault(c, ctxOpts.TransformOpts, true, noBackup, bkpExt)
 			err = th.Decrypt(ctxOpts)
 			exitIfError(err)
 		},
@@ -290,7 +290,7 @@ func decryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 
 func vaultAutoConfigCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Command {
 
-	ctxOpts := &terrahelp.CryptoHandlerOpts{}
+	ctxOpts := &terrahelp.CryptoHandlerOpts{TransformOpts: &terrahelp.TransformOpts{}}
 
 	return cli.Command{
 		Name:  "vault-autoconfig",
@@ -311,6 +311,89 @@ func vaultAutoConfigCommand(f func(provider string) *terrahelp.CryptoHandler) cl
 		Action: func(c *cli.Context) {
 			th := f(terrahelp.ThEncryptProviderVault)
 			err := th.Init(ctxOpts)
+			exitIfError(err)
+		},
+	}
+}
+
+func maskCommand() cli.Command {
+
+	ctxOpts := &terrahelp.MaskOpts{TransformOpts: &terrahelp.TransformOpts{}}
+	var noBackup bool
+	var bkpExt string
+
+	return cli.Command{
+		Name:  "mask",
+		Usage: "Mask will overwrite sensitive data in output or files with a masked value (eg. ******).",
+		Description: "Given a configured mask pattern (numchars x maskchar) to replace, when this command is run, any sensitive \n" +
+			"   data detected (by its presence in the terraform.tfvars file, i.e. the same mechanism used by \n" +
+			"   encrypt/decrypt) will be overwritten with the masked value. \n\n" +
+
+			"   The typical use case for mask is with streamed or piped data (.e.g from terraform plan \n" +
+			"   or terraform apply). If the sensitive input values change from one run to another, quite often the output\n" +
+			"   from these functions will also include details of the changes including the previous (but\n" +
+			"   no doubt still sensitive) value. The prev flag is here to try and help in these cases. \n" +
+			"   Specifically, if true (default is true), the function will try to detect common patterns typically \n" +
+			"   used by terraform commands to denote a sensitive input change, and additionally mask the previous value as well. \n\n" +
+
+			"   EXAMPLES \n" +
+			"   ----------- \n" +
+			"   To inline mask the output of a terraform plan (with default mask of ******):\n\n" +
+
+			"        $  terraform plan | terrahelp mask\n\n" +
+
+			"   To inline mask the output of a terraform plan (with mask of ###):\n\n" +
+
+			"        $  terraform plan | terrahelp mask -maskchar=# -numchars=3 \n\n" +
+
+			"   To suppress the attempted detection of previous sensitive values when masking the output of a terraform plan:\n\n" +
+
+			"        $  terraform plan | terrahelp mask -prev=false \n\n",
+
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "maskchar",
+				Value:       terrahelp.ThMaskChar,
+				Usage:       "Forms mask pattern (numchars x maskchar) to replace sensitive data with (defaults to " + terrahelp.ThMaskChar + ")",
+				Destination: &ctxOpts.MaskChar,
+			},
+			cli.IntFlag{
+				Name:        "numchars",
+				Value:       terrahelp.ThMaskCharNum,
+				Usage:       fmt.Sprintf("Forms mask pattern (numchars x maskchar) to replace sensitive data with (defaults to %d)", terrahelp.ThMaskCharNum),
+				Destination: &ctxOpts.MaskNumChar,
+			},
+			cli.BoolTFlag{
+				Name:        "prev",
+				Usage:       "Include the attempted detection, and masking of previous sensitive values (defaults to true)",
+				Destination: &ctxOpts.ReplacePrevVals,
+			},
+			cli.StringSliceFlag{
+				Name:  "file",
+				Usage: "File(s) to have sensitive data replaced with mask - can be specified multiple times",
+			},
+			cli.StringFlag{
+				Name:        "tfvars",
+				Value:       terrahelp.TfvarsFilename,
+				Usage:       "Terraform tfvars filename, used to detect sensitive vals (defaults to " + terrahelp.TfvarsFilename + ")",
+				Destination: &ctxOpts.TfvarsFilename,
+			},
+			cli.StringFlag{
+				Name:        "bkpext",
+				Value:       terrahelp.ThBkpExtension,
+				Usage:       "Extension to use when creating backups (defaults to " + terrahelp.ThBkpExtension + ")",
+				Destination: &bkpExt,
+			},
+			cli.BoolFlag{
+				Name:        "nobackup",
+				Usage:       "Suppress the creation of backup files before masking (defaults to false)",
+				Destination: &noBackup,
+			},
+		},
+		Action: func(c *cli.Context) {
+			verifyStringSliceFileDefault(c, ctxOpts.TransformOpts, false, noBackup, bkpExt)
+			m := terrahelp.NewMasker(ctxOpts, terrahelp.NewTfVars(ctxOpts.TfvarsFilename))
+			err := m.Mask()
 			exitIfError(err)
 		},
 	}
@@ -337,24 +420,28 @@ func exitIfError(e error) {
 // (see https://github.com/codegangsta/cli/issues/160,
 // https://github.com/codegangsta/cli/issues/350) so we do it here
 // ourselves, as well as transforming the result into an appropriate
-// array of CryptoItem's
+// array of Transformable's
 func verifyStringSliceFileDefault(c *cli.Context,
-	ctxOpts *terrahelp.CryptoHandlerOpts,
+	ctxOpts *terrahelp.TransformOpts,
+	useTfstateDefaults bool,
 	noBackup bool, bkpExt string) {
 	if useStdInAsInput() {
-		ctxOpts.CryptoItems = []terrahelp.CryptoItem{terrahelp.NewStdStreamCryptoItem()}
+		ctxOpts.TransformItems = []terrahelp.Transformable{terrahelp.NewStdStreamTransformable()}
 		return
 	}
 
 	files := c.StringSlice("file")
 	if files == nil || len(files) == 0 {
-		files = []string{terrahelp.TfstateFilename, terrahelp.TfstateBkpFilename}
+		files = []string{}
+		if useTfstateDefaults {
+			files = []string{terrahelp.TfstateFilename, terrahelp.TfstateBkpFilename}
+		}
 	}
 
-	ctxOpts.CryptoItems = []terrahelp.CryptoItem{}
+	ctxOpts.TransformItems = []terrahelp.Transformable{}
 	for _, f := range files {
-		ctxOpts.CryptoItems = append(ctxOpts.CryptoItems,
-			terrahelp.NewFileCryptoItem(f, !noBackup, bkpExt))
+		ctxOpts.TransformItems = append(ctxOpts.TransformItems,
+			terrahelp.NewFileTransformable(f, !noBackup, bkpExt))
 	}
 }
 

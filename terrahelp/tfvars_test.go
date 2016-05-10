@@ -8,10 +8,10 @@ import (
 
 func TestTfvars_ExtractSensitiveVals(t *testing.T) {
 	// Given
-	tu := &Tfvars{}
+	tu := NewTfVars("test-data/example-project/original/terraform.tfvars")
 
 	// When
-	actual, err := tu.ExtractSensitiveVals("test-data/example-project/original/terraform.tfvars")
+	actual, err := tu.Values()
 	expected := []string{
 		"sensitive-value-1-AK#%DJGHS*G",
 		"sensitive-value-2-prYh57",
