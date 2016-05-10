@@ -1,3 +1,8 @@
+## 0.3.1
+
+FEATURES:
+
+* **mask command**: Provide ability to mask sensitive input from terraform commands
 
 ## 0.3.0
 
