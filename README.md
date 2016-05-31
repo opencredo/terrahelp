@@ -14,30 +14,36 @@ At present, it offers the following:
 Run in either full or inline mode, and leveraging either a simple or [Vault](https://www.vaultproject.io) based encryption provider, this
 functionality provides the ability to encrypt and decrypt files such as terraform.tfstate files, as well as piped in 
 output from commands such as terraform apply etc. 
-For more details, and an example of how to use it please see [the example README](https://github.com/opencredo/terrahelp/tree/master/examples/tfstate-encrypt). 
+
+* _Masking functionality_.
+If you don't want to encrypt sensitive data, but rather just mask it out with something like ***** then you can use
+the mask command instead. This can either be run over a file, or have the content piped into it.
+
+For more details, and some examples of how to use it please see [the example README](https://github.com/opencredo/terrahelp/tree/master/examples/tfstate-encrypt). 
 Additionally the blog post [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault)
 also provides more details and background as well.
 
-         NAME:
-            terrahelp - Provides additional functions helpful with terraform development
-         
-         USAGE:
-            terrahelp [global options] command [command options] [arguments...]
-            
-         VERSION:
-            0.2.2-dev
-            
-         AUTHOR(S):
-            https://github.com/opencredo OpenCredo - Nicki Watt 
-            
-         COMMANDS:
-             vault-autoconfig	Auto configures Vault with a basic setup to support encrypt and decrypt actions.
-             encrypt		Uses configured provider to encrypt specified content
-             decrypt		Uses configured provider to decrypt specified content
-         
-         GLOBAL OPTIONS:
-            --help, -h		show help
-            --version, -v	print the version
+        NAME:
+           terrahelp - Provides additional functions helpful with terraform development
+
+        USAGE:
+           terrahelp [global options] command [command options] [arguments...]
+
+        VERSION:
+           0.3.2-dev
+
+        AUTHOR(S):
+           https://github.com/opencredo OpenCredo - Nicki Watt
+
+        COMMANDS:
+            vault-autoconfig	Auto configures Vault with a basic setup to support encrypt and decrypt actions.
+            encrypt		        Uses configured provider to encrypt specified content
+            decrypt		        Uses configured provider to decrypt specified content
+            mask                Mask will overwrite sensitive data in output or files with a masked value (eg. ******).
+
+        GLOBAL OPTIONS:
+           --help, -h		show help
+           --version, -v	print the version
 
 
 ## Installation
