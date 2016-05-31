@@ -19,9 +19,9 @@ output from commands such as terraform apply etc.
 If you don't want to encrypt sensitive data, but rather just mask it out with something like ***** then you can use
 the mask command instead. This can either be run over a file, or have the content piped into it.
 
-For more details, and some examples of how to use it please see [the example README](https://github.com/opencredo/terrahelp/tree/master/examples/tfstate-encrypt). 
-Additionally the blog post [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault)
-also provides more details and background as well.
+For more details, and some examples of how to use it please see [the example READMEs](https://github.com/opencredo/terrahelp/tree/master/examples). 
+
+Additionally the blog post [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault) also provides more details and background as well.
 
         NAME:
            terrahelp - Provides additional functions helpful with terraform development
