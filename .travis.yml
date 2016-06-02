@@ -1,13 +1,21 @@
 language: go
 sudo: false
-
 go:
 - 1.6
-
 matrix:
   allow_failures:
-    - go: tip
-
+  - go: tip
 script:
 - go vet ./...
 - go test -v ./...
+after_success:
+- GOOS=darwin GOARCH=amd64 go build -o=terrahelp-darwin-amd64
+- GOOS=linux GOARCH=amd64 go build -o=terrahelp-linux-amd64
+deploy:
+  provider: releases
+  api_key:
+    secure: EsWoKlNS5eg2MLngjpBidh9oNaXdcMYNYBGxPy6kkZycqXnUWriR/ecdee5E1yJiq3xFORfrw9LN40IqjXJTJNx5pfQiwsH4rAn5/uqTcJOnz1oMBK+UrVtGSyQO8Pc09aEhp4VNwtaIZp5CWCWrlB9aiK1sEc7zGF2+zE8GWfTCg37I8QNv72nLlg674WJBYRJKNRz0anJxCqyUhDfZMlTzZHBc49zk6/mJtI9eCcvorT7SVeIeaQl56DUPsyYqIMwI8WI8PTvWIQ1LQRAp/IE5e/Ix1BLCLEni9sEuA0FaGzWBlWbdt/LBO2Ura5v0i/6fLg8xm6u8j5XN3pPUdPUgsmY2cOzN5TOKlJdz9SNZiJVjv+Czps/GC50Yq8tJaZK51vOMbNhnHVXfAr8OFVXZfjN9LW4HpRl/h+7/1A2j4zNVJXdnac4wY+/mIkBqi6KTn1anBXvAdGOxbtL8LlR33haI/1Ky29+pmqckStrvhr2Ji2sxv02KDd8V1QsDIAKfuWTf1kbfK4RpxwFDp7eKSvePqm3ML9L8yvoO/hd3YJsvnIk9Tn9vlgyZBkBUP68l14Wa1Lkb0+PlUKjIi9sRPPjmIhO0CJQ0J0Ra5OJFUo5/cj2NP5TxTgcdzR3HVvpL2XlAAnR55uPsqYtm0wOcpVVPvkH0Frw6JbjUHOw=
+  file: terrahelp-*-amd64
+  skip_cleanup: true
+  on:
+    tags: true
