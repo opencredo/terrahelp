@@ -30,7 +30,7 @@ Additionally the blog post [Securing Terraform State with Vault](https://www.ope
            terrahelp [global options] command [command options] [arguments...]
 
         VERSION:
-           0.3.2-dev
+           0.4.0
 
         AUTHOR(S):
            https://github.com/opencredo OpenCredo - Nicki Watt

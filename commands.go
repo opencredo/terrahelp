@@ -85,11 +85,11 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 
 			"   EXAMPLES \n" +
 			"   ----------- \n" +
-			"   To fully encrypt the default default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
+			"   To fully encrypt the default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
 
-			"        $  terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 \n\n" +
+			"        $  terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 -file=terraform.tfstate -file=terraform.tfstate.backup \n\n" +
 
-			"   To inline encrypt the default default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
+			"   To inline encrypt the default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
 
 			"        $  terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline\n\n" +
 
@@ -97,11 +97,11 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 
 			"        $  terraform plan | terrahelp encrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline\n\n" +
 
-			"   To fully encrypt the default default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
+			"   To fully encrypt the default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
 
 			"        $  terrahelp encrypt -provider=vault vault-namedkey=my-vault-named-key \n\n" +
 
-			"   To inline encrypt the default default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
+			"   To inline encrypt the default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
 
 			"        $  terrahelp encrypt -provider=vault vault-namedkey=my-vault-named-key -mode=inline\n\n" +
 
@@ -213,11 +213,11 @@ func decryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 			"   ----------- \n" +
 			"   To fully decrypt the default default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
 
-			"        $  terrahelp decrypt -simple-key=AES256Key-32Characters0987654321 \n\n" +
+			"        $  terrahelp decrypt -simple-key=AES256Key-32Characters0987654321 -file=terraform.tfstate -file=terraform.tfstate.backup \n\n" +
 
 			"   To inline decrypt the default default terraform.tfstate & terraform.tfstate.backup files using simple encryption:\n\n" +
 
-			"        $  terrahelp decrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline\n\n" +
+			"        $  terrahelp decrypt -simple-key=AES256Key-32Characters0987654321 -mode=inline -file=terraform.tfstate -file=terraform.tfstate.backup \n\n" +
 
 			"   To inline decrypt the previously saved output of a terraform plan using simple encryption:\n\n" +
 
@@ -225,11 +225,11 @@ func decryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 
 			"   To fully decrypt the default default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
 
-			"        $  terrahelp decrypt -provider=vault vault-namedkey=my-vault-named-key \n\n" +
+			"        $  terrahelp decrypt -provider=vault vault-namedkey=my-vault-named-key  -file=terraform.tfstate -file=terraform.tfstate.backup \n\n" +
 
 			"   To inline decrypt the default default terraform.tfstate & terraform.tfstate.backup files using vault encryption:\n\n" +
 
-			"        $  terrahelp decrypt -provider=vault vault-namedkey=my-vault-named-key -mode=inline\n\n" +
+			"        $  terrahelp decrypt -provider=vault vault-namedkey=my-vault-named-key -mode=inline -file=terraform.tfstate -file=terraform.tfstate.backup \n\n" +
 
 			"\n",
 		Flags: []cli.Flag{
@@ -425,30 +425,15 @@ func verifyStringSliceFileDefault(c *cli.Context,
 	ctxOpts *terrahelp.TransformOpts,
 	useTfstateDefaults bool,
 	noBackup bool, bkpExt string) {
-	if useStdInAsInput() {
+	files := c.StringSlice("file")
+
+	if files == nil || len(files) == 0 {
 		ctxOpts.TransformItems = []terrahelp.Transformable{terrahelp.NewStdStreamTransformable()}
 		return
 	}
-
-	files := c.StringSlice("file")
-	if files == nil || len(files) == 0 {
-		files = []string{}
-		if useTfstateDefaults {
-			files = []string{terrahelp.TfstateFilename, terrahelp.TfstateBkpFilename}
-		}
-	}
-
 	ctxOpts.TransformItems = []terrahelp.Transformable{}
 	for _, f := range files {
 		ctxOpts.TransformItems = append(ctxOpts.TransformItems,
 			terrahelp.NewFileTransformable(f, !noBackup, bkpExt))
 	}
-}
-
-func useStdInAsInput() bool {
-
-	info, _ := os.Stdin.Stat()
-
-	// Currently only detecting input via pipes
-	return (info.Mode() & os.ModeNamedPipe) == os.ModeNamedPipe
 }
