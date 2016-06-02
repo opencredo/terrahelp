@@ -4,7 +4,9 @@
 Terrahelp will now ignore stdin input if a `-file` flag is present.
 
 **The `-file` flag will no longer default to terraform.tfstate and terraform.tfstate.backup.**
+[PR-6](https://github.com/opencredo/terrahelp/pull/6)
 
+This is part of resolving [#5](https://github.com/opencredo/terrahelp/issues/5)
 
 ## 0.3.1
 
