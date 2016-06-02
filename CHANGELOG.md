@@ -1,4 +1,10 @@
-## 0.3.2 (Unreleased)
+## 0.4.0
+**Note: This release contains breaking changes!!**
+
+Terrahelp will now ignore stdin input if a `-file` flag is present.
+
+**The `-file` flag will no longer default to terraform.tfstate and terraform.tfstate.backup.**
+
 
 ## 0.3.1
 
