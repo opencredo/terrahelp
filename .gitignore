@@ -1,6 +1,7 @@
 *.dll
 *.exe
 .idea/
+*.iml
 *.ipr
 example.tf
 bin/
@@ -12,4 +13,4 @@ examples/tfstate-encrypt/*.tfstate*
 *.bak
 *~
 .*.swp
-
+/terrahelp-*

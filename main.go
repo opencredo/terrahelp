@@ -37,6 +37,12 @@ func newTerraHelperFunc() func(provider string) *terrahelp.CryptoHandler {
 				exitIfError(err)
 			}
 			return &terrahelp.CryptoHandler{Encrypter: e}
+		case (provider == terrahelp.ThEncryptProviderVaultCli):
+			e, err := terrahelp.NewVaultCliEncrypter()
+			if err != nil {
+				exitIfError(err)
+			}
+			return &terrahelp.CryptoHandler{Encrypter: e}
 		}
 
 		exitIfError(fmt.Errorf("Invalid provider %s specified ", provider))
