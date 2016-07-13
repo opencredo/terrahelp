@@ -1,5 +1,7 @@
-## 0.4.1 (Unreleased)
-* Add new `vault-cli` provider to use the `vault` command line tool rather than talking to the vault API. 
+## 0.4.2 (Unreleased)
+
+## 0.4.1
+* Add new `vault-cli` provider to use the `vault` command line tool rather than talking to the vault API.
 
 ## 0.4.0
 **Note: This release contains breaking changes!!**
