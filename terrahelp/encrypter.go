@@ -89,6 +89,15 @@ func NewVaultEncrypter() (*VaultEncrypter, error) {
 	return createVaultEncrypter(vc)
 }
 
+func NewVaultCliEncrypter() (*VaultEncrypter, error) {
+	var vc VaultClient
+	vc, err := NewVaultCliClient()
+	if err != nil {
+		return nil, err
+	}
+	return &VaultEncrypter{vc}, nil
+}
+
 func createVaultEncrypter(vc VaultClient) (*VaultEncrypter, error) {
 	return &VaultEncrypter{vc}, nil
 }

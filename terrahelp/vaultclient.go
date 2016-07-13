@@ -23,9 +23,6 @@ type VaultClient interface {
 	Encrypt(key, text string) (string, error)
 	// Decrypt uses the named encryption key to decrypt the supplied content
 	Decrypt(key, ciphertext string) (string, error)
-
-	transitMountExists() (bool, error)
-	namedEncryptionKeyExists(key string) (bool, error)
 }
 
 // DefaultVaultClient provides a wrapper around the core Vault
@@ -43,7 +40,10 @@ func NewDefaultVaultClient() (*DefaultVaultClient, error) {
 			"\n  please configure these before continuing.")
 	}
 	vc := api.DefaultConfig()
-	vc.ReadEnvironment()
+	err := vc.ReadEnvironment()
+	if err != nil {
+		return nil, fmt.Errorf("Issue getting client : %s", err)
+	}
 	vclient, err := api.NewClient(vc)
 	if err != nil {
 		return nil, fmt.Errorf("Issue getting client : %s", err)

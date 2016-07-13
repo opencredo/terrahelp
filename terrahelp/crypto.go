@@ -57,6 +57,7 @@ const (
 const (
 	ThEncryptProviderSimple = "simple"
 	ThEncryptProviderVault  = "vault"
+	ThEncryptProviderVaultCli  = "vault-cli"
 )
 
 // Valid encryption modes
@@ -72,6 +73,8 @@ func (o *CryptoHandlerOpts) getEncryptionKey() string {
 	case (o.EncProvider == ThEncryptProviderSimple):
 		return o.SimpleKey
 	case (o.EncProvider == ThEncryptProviderVault):
+		return o.NamedEncKey
+	case (o.EncProvider == ThEncryptProviderVaultCli):
 		return o.NamedEncKey
 	default:
 		return ""
@@ -91,7 +94,7 @@ func (o *CryptoHandlerOpts) ValidateForEncryptDecrypt() error {
 			"The simple provider uses AES and so the AES key should be either 16 or 32 byte to select AES-128 or AES-256 encryption")
 
 	}
-	if o.EncProvider == ThEncryptProviderVault && o.NamedEncKey == "" {
+	if (o.EncProvider == ThEncryptProviderVault || o.EncProvider == ThEncryptProviderVaultCli) && o.NamedEncKey == "" {
 		return fmt.Errorf("You must supply a vault-namedkey when using the vault provider ")
 	}
 	return nil
