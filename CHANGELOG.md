@@ -1,4 +1,5 @@
 ## 0.4.2 (Unreleased)
+* Build against go 1.7.3
 
 ## 0.4.1
 * Add new `vault-cli` provider to use the `vault` command line tool rather than talking to the vault API.

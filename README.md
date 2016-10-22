@@ -71,7 +71,7 @@ Not here yet ...
 
 To set up your Go environment - look [here](https://golang.org/doc/code.html).
 
-You must have Go > 1.6 installed.
+Install Go (Terrahelp is currently built against 1.7.3)
 
     mkdir -p "$GOPATH/src/github.com/opencredo/"
     git clone https://github.com/opencredo/terrahelp.git "$GOPATH/src/github.com/opencredo/terrahelp"
