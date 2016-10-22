@@ -2,8 +2,6 @@ package api
 
 import (
 	"fmt"
-
-	"github.com/mitchellh/mapstructure"
 )
 
 func (c *Sys) ListAuth() (map[string]*AuthMount, error) {
@@ -14,32 +12,9 @@ func (c *Sys) ListAuth() (map[string]*AuthMount, error) {
 	}
 	defer resp.Body.Close()
 
-	var result map[string]interface{}
+	var result map[string]*AuthMount
 	err = resp.DecodeJSON(&result)
-	if err != nil {
-		return nil, err
-	}
-
-	mounts := map[string]*AuthMount{}
-	for k, v := range result {
-		switch v.(type) {
-		case map[string]interface{}:
-		default:
-			continue
-		}
-		var res AuthMount
-		err = mapstructure.Decode(v, &res)
-		if err != nil {
-			return nil, err
-		}
-		// Not a mount, some other api.Secret data
-		if res.Type == "" {
-			continue
-		}
-		mounts[k] = &res
-	}
-
-	return mounts, nil
+	return result, err
 }
 
 func (c *Sys) EnableAuth(path, authType, desc string) error {
@@ -76,12 +51,6 @@ func (c *Sys) DisableAuth(path string) error {
 // documentation. Please refer to that documentation for more details.
 
 type AuthMount struct {
-	Type        string           `json:"type" structs:"type" mapstructure:"type"`
-	Description string           `json:"description" structs:"description" mapstructure:"description"`
-	Config      AuthConfigOutput `json:"config" structs:"config" mapstructure:"config"`
-}
-
-type AuthConfigOutput struct {
-	DefaultLeaseTTL int `json:"default_lease_ttl" structs:"default_lease_ttl" mapstructure:"default_lease_ttl"`
-	MaxLeaseTTL     int `json:"max_lease_ttl" structs:"max_lease_ttl" mapstructure:"max_lease_ttl"`
+	Type        string
+	Description string
 }

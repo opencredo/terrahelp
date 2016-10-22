@@ -2,8 +2,6 @@ package api
 
 import (
 	"fmt"
-
-	"github.com/mitchellh/mapstructure"
 )
 
 func (c *Sys) AuditHash(path string, input string) (string, error) {
@@ -23,15 +21,11 @@ func (c *Sys) AuditHash(path string, input string) (string, error) {
 	defer resp.Body.Close()
 
 	type d struct {
-		Hash string `json:"hash"`
+		Hash string
 	}
 
 	var result d
 	err = resp.DecodeJSON(&result)
-	if err != nil {
-		return "", err
-	}
-
 	return result.Hash, err
 }
 
@@ -43,32 +37,9 @@ func (c *Sys) ListAudit() (map[string]*Audit, error) {
 	}
 	defer resp.Body.Close()
 
-	var result map[string]interface{}
+	var result map[string]*Audit
 	err = resp.DecodeJSON(&result)
-	if err != nil {
-		return nil, err
-	}
-
-	mounts := map[string]*Audit{}
-	for k, v := range result {
-		switch v.(type) {
-		case map[string]interface{}:
-		default:
-			continue
-		}
-		var res Audit
-		err = mapstructure.Decode(v, &res)
-		if err != nil {
-			return nil, err
-		}
-		// Not a mount, some other api.Secret data
-		if res.Type == "" {
-			continue
-		}
-		mounts[k] = &res
-	}
-
-	return mounts, nil
+	return result, err
 }
 
 func (c *Sys) EnableAudit(
@@ -103,7 +74,7 @@ func (c *Sys) DisableAudit(path string) error {
 }
 
 // Structures for the requests/resposne are all down here. They aren't
-// individually documented because the map almost directly to the raw HTTP API
+// individually documentd because the map almost directly to the raw HTTP API
 // documentation. Please refer to that documentation for more details.
 
 type Audit struct {

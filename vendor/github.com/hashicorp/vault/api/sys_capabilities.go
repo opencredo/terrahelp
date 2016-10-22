@@ -1,23 +1,11 @@
 package api
 
-import "fmt"
-
 func (c *Sys) CapabilitiesSelf(path string) ([]string, error) {
-	return c.Capabilities(c.c.Token(), path)
-}
-
-func (c *Sys) Capabilities(token, path string) ([]string, error) {
 	body := map[string]string{
-		"token": token,
-		"path":  path,
+		"path": path,
 	}
 
-	reqPath := "/v1/sys/capabilities"
-	if token == c.c.Token() {
-		reqPath = fmt.Sprintf("%s-self", reqPath)
-	}
-
-	r := c.c.NewRequest("POST", reqPath)
+	r := c.c.NewRequest("POST", "/v1/sys/capabilities-self")
 	if err := r.SetJSONBody(body); err != nil {
 		return nil, err
 	}
@@ -28,16 +16,33 @@ func (c *Sys) Capabilities(token, path string) ([]string, error) {
 	}
 	defer resp.Body.Close()
 
-	var result map[string]interface{}
+	var result CapabilitiesResponse
 	err = resp.DecodeJSON(&result)
-	if err != nil {
+	return result.Capabilities, err
+}
+
+func (c *Sys) Capabilities(token, path string) ([]string, error) {
+	body := map[string]string{
+		"token": token,
+		"path":  path,
+	}
+
+	r := c.c.NewRequest("POST", "/v1/sys/capabilities")
+	if err := r.SetJSONBody(body); err != nil {
 		return nil, err
 	}
 
-	var capabilities []string
-	capabilitiesRaw := result["capabilities"].([]interface{})
-	for _, capability := range capabilitiesRaw {
-		capabilities = append(capabilities, capability.(string))
+	resp, err := c.c.RawRequest(r)
+	if err != nil {
+		return nil, err
 	}
-	return capabilities, nil
+	defer resp.Body.Close()
+
+	var result CapabilitiesResponse
+	err = resp.DecodeJSON(&result)
+	return result.Capabilities, err
+}
+
+type CapabilitiesResponse struct {
+	Capabilities []string `json:"capabilities"`
 }

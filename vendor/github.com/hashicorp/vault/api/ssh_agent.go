@@ -9,7 +9,6 @@ import (
 
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/hashicorp/go-multierror"
-	"github.com/hashicorp/go-rootcerts"
 	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/hcl/hcl/ast"
 	"github.com/mitchellh/mapstructure"
@@ -41,16 +40,13 @@ type SSHHelper struct {
 type SSHVerifyResponse struct {
 	// Usually empty. If the request OTP is echo request message, this will
 	// be set to the corresponding echo response message.
-	Message string `json:"message" structs:"message" mapstructure:"message"`
+	Message string `mapstructure:"message"`
 
 	// Username associated with the OTP
-	Username string `json:"username" structs:"username" mapstructure:"username"`
+	Username string `mapstructure:"username"`
 
 	// IP associated with the OTP
-	IP string `json:"ip" structs:"ip" mapstructure:"ip"`
-
-	// Name of the role against which the OTP was issued
-	RoleName string `json:"role_name" structs:"role_name" mapstructure:"role_name"`
+	IP string `mapstructure:"ip"`
 }
 
 // SSHHelperConfig is a structure which represents the entries from the vault-ssh-helper's configuration file.
@@ -60,9 +56,7 @@ type SSHHelperConfig struct {
 	CACert          string `hcl:"ca_cert"`
 	CAPath          string `hcl:"ca_path"`
 	AllowedCidrList string `hcl:"allowed_cidr_list"`
-	AllowedRoles    string `hcl:"allowed_roles"`
 	TLSSkipVerify   bool   `hcl:"tls_skip_verify"`
-	TLSServerName   string `hcl:"tls_server_name"`
 }
 
 // SetTLSParameters sets the TLS parameters for this SSH agent.
@@ -71,22 +65,11 @@ func (c *SSHHelperConfig) SetTLSParameters(clientConfig *Config, certPool *x509.
 		InsecureSkipVerify: c.TLSSkipVerify,
 		MinVersion:         tls.VersionTLS12,
 		RootCAs:            certPool,
-		ServerName:         c.TLSServerName,
 	}
 
 	transport := cleanhttp.DefaultTransport()
 	transport.TLSClientConfig = tlsConfig
 	clientConfig.HttpClient.Transport = transport
-}
-
-// Returns true if any of the following conditions are true:
-//   * CA cert is configured
-//   * CA path is configured
-//   * configured to skip certificate verification
-//   * TLS server name is configured
-//
-func (c *SSHHelperConfig) shouldSetTLSParameters() bool {
-	return c.CACert != "" || c.CAPath != "" || c.TLSServerName != "" || c.TLSSkipVerify
 }
 
 // NewClient returns a new client for the configuration. This client will be used by the
@@ -101,15 +84,18 @@ func (c *SSHHelperConfig) NewClient() (*Client, error) {
 	clientConfig.Address = c.VaultAddr
 
 	// Check if certificates are provided via config file.
-	if c.shouldSetTLSParameters() {
-		rootConfig := &rootcerts.Config{
-			CAFile: c.CACert,
-			CAPath: c.CAPath,
+	if c.CACert != "" || c.CAPath != "" || c.TLSSkipVerify {
+		var certPool *x509.CertPool
+		var err error
+		if c.CACert != "" {
+			certPool, err = LoadCACert(c.CACert)
+		} else if c.CAPath != "" {
+			certPool, err = LoadCAPath(c.CAPath)
 		}
-		certPool, err := rootcerts.LoadCACerts(rootConfig)
 		if err != nil {
 			return nil, err
 		}
+
 		// Enable TLS on the HTTP client information
 		c.SetTLSParameters(clientConfig, certPool)
 	}
@@ -155,9 +141,7 @@ func ParseSSHHelperConfig(contents string) (*SSHHelperConfig, error) {
 		"ca_cert",
 		"ca_path",
 		"allowed_cidr_list",
-		"allowed_roles",
 		"tls_skip_verify",
-		"tls_server_name",
 	}
 	if err := checkHCLKeys(list, valid); err != nil {
 		return nil, multierror.Prefix(err, "ssh_helper:")

@@ -1,12 +1,9 @@
 package api
 
 func (c *Sys) Renew(id string, increment int) (*Secret, error) {
-	r := c.c.NewRequest("PUT", "/v1/sys/renew")
+	r := c.c.NewRequest("PUT", "/v1/sys/renew/"+id)
 
-	body := map[string]interface{}{
-		"increment": increment,
-		"lease_id":  id,
-	}
+	body := map[string]interface{}{"increment": increment}
 	if err := r.SetJSONBody(body); err != nil {
 		return nil, err
 	}

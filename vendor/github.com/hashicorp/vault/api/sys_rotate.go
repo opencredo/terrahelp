@@ -25,6 +25,6 @@ func (c *Sys) KeyStatus() (*KeyStatus, error) {
 }
 
 type KeyStatus struct {
-	Term        int       `json:"term"`
+	Term        int
 	InstallTime time.Time `json:"install_time"`
 }

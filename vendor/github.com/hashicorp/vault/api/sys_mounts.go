@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/fatih/structs"
-	"github.com/mitchellh/mapstructure"
 )
 
 func (c *Sys) ListMounts() (map[string]*MountOutput, error) {
@@ -15,32 +14,9 @@ func (c *Sys) ListMounts() (map[string]*MountOutput, error) {
 	}
 	defer resp.Body.Close()
 
-	var result map[string]interface{}
+	var result map[string]*MountOutput
 	err = resp.DecodeJSON(&result)
-	if err != nil {
-		return nil, err
-	}
-
-	mounts := map[string]*MountOutput{}
-	for k, v := range result {
-		switch v.(type) {
-		case map[string]interface{}:
-		default:
-			continue
-		}
-		var res MountOutput
-		err = mapstructure.Decode(v, &res)
-		if err != nil {
-			return nil, err
-		}
-		// Not a mount, some other api.Secret data
-		if res.Type == "" {
-			continue
-		}
-		mounts[k] = &res
-	}
-
-	return mounts, nil
+	return result, err
 }
 
 func (c *Sys) Mount(path string, mountInfo *MountInput) error {
@@ -109,13 +85,8 @@ func (c *Sys) MountConfig(path string) (*MountConfigOutput, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-
 	var result MountConfigOutput
 	err = resp.DecodeJSON(&result)
-	if err != nil {
-		return nil, err
-	}
-
 	return &result, err
 }
 
