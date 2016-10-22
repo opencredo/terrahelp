@@ -3,22 +3,24 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "UreyFm6qibs6udPclyMI6Lqdz7k=",
+			"checksumSHA1": "yu9xDOS16dVyKgcxvb4tCHcxsRw=",
 			"path": "github.com/codegangsta/cli",
-			"revision": "bc465becccd1d527002fda095fc3c19d9c115029",
-			"revisionTime": "2016-03-26T15:39:47-07:00"
+			"revision": "a14d7d367bc02b1f57d88de97926727f2d936387",
+			"revisionTime": "2016-08-29T00:43:50Z",
+			"version": "v1.18.1",
+			"versionExact": "v1.18.1"
 		},
 		{
-			"checksumSHA1": "5rPfda8jFccr3A6heL+JAmi9K9g=",
+			"checksumSHA1": "Lf3uUXTkKK5DJ37BxQvxO1Fq+K8=",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d",
-			"revisionTime": "2015-11-05T15:09:06-06:00"
+			"revision": "6d212800a42e8ab5c146b8ace3490ee17e5225f9",
+			"revisionTime": "2016-09-07T16:21:46Z"
 		},
 		{
-			"checksumSHA1": "vg41Q7MPlkYzwJR4d5IxpfyhfLU=",
+			"checksumSHA1": "KCWVxG+J8SxHGlGiUghe0KBGsa8=",
 			"path": "github.com/fatih/structs",
-			"revision": "73c4e3dc02a78deaba8640d5f3a8c236ec1352bf",
-			"revisionTime": "2016-03-17T11:28:53+02:00"
+			"revision": "dc3312cb1a4513a366c4c9e622ad55c32df12ed3",
+			"revisionTime": "2016-08-07T23:55:29Z"
 		},
 		{
 			"checksumSHA1": "cdOCt0Yb+hdErz8NAQqayxPmRsY=",
@@ -27,78 +29,102 @@
 			"revisionTime": "2014-10-27T22:47:10-07:00"
 		},
 		{
-			"checksumSHA1": "fSe5y1UgTDeYlnFfUcDA1zzcw+U=",
+			"checksumSHA1": "Uzyon2091lmwacNsl1hCytjhHtg=",
 			"path": "github.com/hashicorp/go-cleanhttp",
-			"revision": "875fb671b3ddc66f8e2f0acc33829c8cb989a38d",
-			"revisionTime": "2016-02-17T16:48:20-05:00"
+			"revision": "ad28ea4487f05916463e2423a55166280e8254b5",
+			"revisionTime": "2016-04-07T17:41:26Z"
 		},
 		{
-			"checksumSHA1": "lrSl49G23l6NhfilxPM0XFs5rZo=",
+			"checksumSHA1": "KS9lmJV8Z7KHdtSIhbafQLU1hC4=",
 			"path": "github.com/hashicorp/go-multierror",
-			"revision": "d30f09973e19c1dfcd120b2d9c4f168e68d6b5d5",
-			"revisionTime": "2015-09-16T13:57:42-07:00"
+			"revision": "8c5f0ad9360406a3807ce7de6bc73269a91a6e51",
+			"revisionTime": "2016-08-11T01:57:21Z"
 		},
 		{
-			"checksumSHA1": "5LrCq/ydlbL6pq1cdmuxiw7QV98=",
+			"checksumSHA1": "A1PcINvF3UiwHRKn8UcgARgvGRs=",
+			"path": "github.com/hashicorp/go-rootcerts",
+			"revision": "6bb64b370b90e7ef1fa532be9e591a81c3493e00",
+			"revisionTime": "2016-05-03T14:34:40Z"
+		},
+		{
+			"checksumSHA1": "8OPDk+bKyRGJoKcS4QNw9F7dpE8=",
 			"path": "github.com/hashicorp/hcl",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
-			"revisionTime": "2016-03-21T14:46:21Z"
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
+			"revisionTime": "2016-10-19T17:07:01Z"
 		},
 		{
 			"checksumSHA1": "WP5ODRo9+USuAsKYPu5RW3q8Epg=",
 			"path": "github.com/hashicorp/hcl/hcl/ast",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
 			"revisionTime": "2016-03-21T14:46:21Z"
 		},
 		{
 			"checksumSHA1": "SVw0qm83Anf5T2GkYabn+f7Ibv0=",
 			"path": "github.com/hashicorp/hcl/hcl/parser",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
 			"revisionTime": "2016-03-21T14:46:21Z"
 		},
 		{
 			"checksumSHA1": "WZM0q7Sya8PcGj607x1npgcEPa4=",
 			"path": "github.com/hashicorp/hcl/hcl/scanner",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
 			"revisionTime": "2016-03-21T14:46:21Z"
 		},
 		{
 			"checksumSHA1": "wh2mSXMC88JiAy8FIrTtL7OmY7Q=",
 			"path": "github.com/hashicorp/hcl/hcl/strconv",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
 			"revisionTime": "2016-03-21T14:46:21Z"
 		},
 		{
 			"checksumSHA1": "VGNVyGYDGTTCTRqGH5R+CL0u6xw=",
 			"path": "github.com/hashicorp/hcl/hcl/token",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
 			"revisionTime": "2016-03-21T14:46:21Z"
 		},
 		{
 			"checksumSHA1": "uEaK2zagnGctsUmjWt8ZYmK1Yvs=",
 			"path": "github.com/hashicorp/hcl/json/parser",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
 			"revisionTime": "2016-03-21T14:46:21Z"
 		},
 		{
 			"checksumSHA1": "S1e0F9ZKSnqgOLfjDTYazRL28tA=",
 			"path": "github.com/hashicorp/hcl/json/scanner",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
 			"revisionTime": "2016-03-21T14:46:21Z"
 		},
 		{
 			"checksumSHA1": "fNlXQCQEnb+B3k5UDL/r15xtSJY=",
 			"path": "github.com/hashicorp/hcl/json/token",
-			"revision": "2604f3bda7e8960c1be1063709e7d7f0765048d0",
+			"revision": "99ce73d4fe576449f7a689d4fc2b2ad09a86bdaa",
 			"revisionTime": "2016-03-21T14:46:21Z"
 		},
 		{
-			"checksumSHA1": "Zza9+rhJp0fWW7XbreRr/KIfeBU=",
+			"checksumSHA1": "LaOQaDi4rc0QVgWtzDrQqa7hJgs=",
 			"path": "github.com/hashicorp/vault/api",
-			"revision": "77f2b8a2fa408e0fc77ed7402d51cf0cfa0335d7",
-			"revisionTime": "2016-03-16T15:48:36-04:00",
-			"version": "v0.5.2",
-			"versionExact": "v0.5.2"
+			"revision": "22619b6786724c8eca5340a63395bf3058e1e3f7",
+			"revisionTime": "2016-10-05T18:31:35Z",
+			"version": "=v0.6.2",
+			"versionExact": "v0.6.2"
+		},
+		{
+			"checksumSHA1": "ft77GtqeZEeCXioGpF/s6DlGm/U=",
+			"path": "github.com/hashicorp/vault/helper/compressutil",
+			"revision": "7f8ac1fa8d42ce81855b6a763d137667fcd85244",
+			"revisionTime": "2016-10-20T16:39:19Z"
+		},
+		{
+			"checksumSHA1": "yUiSTPf0QUuL2r/81sjuytqBoeQ=",
+			"path": "github.com/hashicorp/vault/helper/jsonutil",
+			"revision": "7f8ac1fa8d42ce81855b6a763d137667fcd85244",
+			"revisionTime": "2016-10-20T16:39:19Z"
+		},
+		{
+			"checksumSHA1": "AXacfEchaUqT5RGmPmMXsOWRhv8=",
+			"path": "github.com/mitchellh/go-homedir",
+			"revision": "756f7b183b7ab78acdbbee5c7f392838ed459dda",
+			"revisionTime": "2016-06-21T17:42:43Z"
 		},
 		{
 			"checksumSHA1": "KCJhN9Dx329wAN/SeL4CxeypPyk=",
@@ -113,34 +139,52 @@
 			"revisionTime": "2016-01-10T11:55:54+01:00"
 		},
 		{
+			"checksumSHA1": "Qm7DuiE3Cn0+CelfV9tggSPNG0k=",
+			"path": "github.com/sethgrid/pester",
+			"revision": "2a102734c18c43c74fd0664e06cd414cf9602b93",
+			"revisionTime": "2016-09-16T18:34:45Z"
+		},
+		{
 			"checksumSHA1": "K0crHygPTP42i1nLKWphSlvOQJw=",
 			"path": "github.com/stretchr/objx",
 			"revision": "1a9d0bb9f541897e62256577b352fdbc1fb4fd94",
 			"revisionTime": "2015-09-28T13:21:52+01:00"
 		},
 		{
-			"checksumSHA1": "5Yq+bWhHXCaqGDuGp8RBj47OhME=",
+			"checksumSHA1": "/kKwYqD04AkkDZFQhGwklKw3RFA=",
 			"path": "github.com/stretchr/testify",
-			"revision": "6fe211e493929a8aac0469b93f28b1d0688a9a3a",
-			"revisionTime": "2016-03-05T16:54:46Z"
+			"revision": "69483b4bd14f5845b5a1e55bca19e954e827f1d0",
+			"revisionTime": "2016-09-25T01:54:16Z",
+			"version": "v1.1.4",
+			"versionExact": "v1.1.4"
 		},
 		{
-			"checksumSHA1": "Bn333k9lTndxU3D6n/G5c+GMcYY=",
+			"checksumSHA1": "q1qqfgDOGwfEuMlbHWNjYf09ACM=",
 			"path": "github.com/stretchr/testify/assert",
-			"revision": "6fe211e493929a8aac0469b93f28b1d0688a9a3a",
-			"revisionTime": "2016-03-05T16:54:46Z"
+			"revision": "69483b4bd14f5845b5a1e55bca19e954e827f1d0",
+			"revisionTime": "2016-09-25T01:54:16Z",
+			"version": "v1.1.4",
+			"versionExact": "v1.1.4"
 		},
 		{
 			"checksumSHA1": "fg3TzS9/QK3wZbzei3Z6O8XPLHg=",
 			"path": "github.com/stretchr/testify/http",
-			"revision": "6fe211e493929a8aac0469b93f28b1d0688a9a3a",
-			"revisionTime": "2016-03-05T16:54:46Z"
+			"revision": "69483b4bd14f5845b5a1e55bca19e954e827f1d0",
+			"revisionTime": "2016-09-25T01:54:16Z",
+			"version": "v1.1.4",
+			"versionExact": "v1.1.4"
 		},
 		{
-			"checksumSHA1": "8wi0XTx6HyW5ogqW6friUMd+Nns=",
+			"checksumSHA1": "Je6cJkYWj2SoaHDMGpE00BGi9sw=",
 			"path": "github.com/stretchr/testify/mock",
-			"revision": "6fe211e493929a8aac0469b93f28b1d0688a9a3a",
-			"revisionTime": "2016-03-05T16:54:46Z"
+			"revision": "69483b4bd14f5845b5a1e55bca19e954e827f1d0",
+			"revisionTime": "2016-09-25T01:54:16Z",
+			"version": "v1.1.4",
+			"versionExact": "v1.1.4"
+		},
+		{
+			"path": "v1.18.1",
+			"revision": ""
 		}
 	],
 	"rootPath": "github.com/opencredo/terrahelp"
