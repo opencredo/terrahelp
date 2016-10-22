@@ -1,10 +1,12 @@
 package terrahelp
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	"github.com/hashicorp/hcl"
+	"github.com/hashicorp/hcl/hcl/ast"
+	"github.com/hashicorp/hcl/hcl/token"
+	"sort"
 )
 
 // Replaceables defines the values which should be replaced as part of
@@ -46,21 +48,29 @@ func (t *Tfvars) Values() ([]string, error) {
 		return nil, err
 	}
 
-	// Extract kv pairs
-	var res map[string]string
-	if err := hcl.DecodeObject(&res, astFile); err != nil {
-		return nil, fmt.Errorf(
-			"Error occured decoding Terraform vars file: %s\n\n"+
-				"tfvars files are expected to only contain `key = \"value\"` type config.\n",
-			err)
-	}
-
-	// Extract just the values
+	// Find sensitive values (all quoted value strings)
 	var vals []string
-	for _, v := range res {
-		if v != "" {
-			vals = append(vals, v)
+	ast.Walk(astFile, func(node ast.Node) (ast.Node, bool) {
+		if node == nil {
+			return node, false
 		}
+
+		switch n := node.(type) {
+		case *ast.LiteralType:
+			switch n.Token.Type {
+			case token.STRING:
+				vals = append(vals, n.Token.Value().(string))
+			}
+		}
+
+		return node, true
+	})
+
+	// Reverse in case there are overlaps
+	sort.Strings(vals)
+	for i := len(vals)/2 - 1; i >= 0; i-- {
+		opp := len(vals) - 1 - i
+		vals[i], vals[opp] = vals[opp], vals[i]
 	}
 
 	return vals, nil

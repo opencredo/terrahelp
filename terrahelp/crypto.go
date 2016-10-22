@@ -55,9 +55,9 @@ const (
 
 // Valid encryption providers
 const (
-	ThEncryptProviderSimple = "simple"
-	ThEncryptProviderVault  = "vault"
-	ThEncryptProviderVaultCli  = "vault-cli"
+	ThEncryptProviderSimple   = "simple"
+	ThEncryptProviderVault    = "vault"
+	ThEncryptProviderVaultCli = "vault-cli"
 )
 
 // Valid encryption modes
