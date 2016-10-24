@@ -1,4 +1,8 @@
 ## 0.4.2 (Unreleased)
+* [PR-9](https://github.com/opencredo/terrahelp/pull/9) Cater for terraform 0.7.x list and map variables (resolves [#8](https://github.com/opencredo/terrahelp/issues/8))
+* Updated examples and command line docs
+* Builds against Go 1.7.3
+* Confirmed testing against Vault 0.5.2
 
 ## 0.4.1
 * Add new `vault-cli` provider to use the `vault` command line tool rather than talking to the vault API.
@@ -6,12 +10,7 @@
 ## 0.4.0
 **Note: This release contains breaking changes!!**
 
-Terrahelp will now ignore stdin input if a `-file` flag is present.
-
-**The `-file` flag will no longer default to terraform.tfstate and terraform.tfstate.backup.**
-[PR-6](https://github.com/opencredo/terrahelp/pull/6)
-
-This is part of resolving [#5](https://github.com/opencredo/terrahelp/issues/5)
+* [PR-6](https://github.com/opencredo/terrahelp/pull/6) Terrahelp will now ignore stdin input if a `-file` flag is present. The `-file` flag will no longer default to terraform.tfstate and terraform.tfstate.backup (part of resolving [#5](https://github.com/opencredo/terrahelp/issues/5))
 
 ## 0.3.1
 

@@ -10,8 +10,7 @@ import (
 type VaultCliClient struct {
 }
 
-type vaultOutput struct
-{
+type vaultOutput struct {
 	Data map[string]string `json:"data"`
 }
 
@@ -103,11 +102,11 @@ func (v *VaultCliClient) Decrypt(key, ciphertext string) (string, error) {
 
 // Encrypt uses the named encryption key to encrypt the supplied content
 func (v *VaultCliClient) Encrypt(key, b64text string) (string, error) {
-	return v.transit(v.encryptEndpoint(key), "plaintext" , b64text, "ciphertext")
+	return v.transit(v.encryptEndpoint(key), "plaintext", b64text, "ciphertext")
 }
 
 func (v *VaultCliClient) transit(key, inputField, value, expectedField string) (string, error) {
-	cmd := exec.Command("vault", "write", "-format=json", key, inputField + "=-")
+	cmd := exec.Command("vault", "write", "-format=json", key, inputField+"=-")
 	cmd.Stdin = strings.NewReader(value)
 	out, err := cmd.Output()
 

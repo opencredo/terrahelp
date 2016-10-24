@@ -9,6 +9,8 @@ variable "tf_sensitive_key_3"     {}
 variable "tf_sensitive_key_4"     {}
 variable "tf_sensitive_key_6"     {}
 
+variable "tf_sensitive_list_vals"       { type = "list" }
+variable "tf_sensitive_flatmap_vals"    { type = "map"  }
 
 # ----------------------------------------------------------------
 # Non sensitive variable defaults

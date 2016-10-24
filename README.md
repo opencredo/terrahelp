@@ -71,25 +71,32 @@ Not here yet ...
 
 To set up your Go environment - look [here](https://golang.org/doc/code.html).
 
-You must have Go > 1.6 installed.
+Install Go (Terrahelp is currently built against 1.7.3)
 
     mkdir -p "$GOPATH/src/github.com/opencredo/"
     git clone https://github.com/opencredo/terrahelp.git "$GOPATH/src/github.com/opencredo/terrahelp"
     cd "$GOPATH/src/github.com/opencredo/terrahelp"
 
-Build it
+*Dependencies*
+
+Terrahelp uses [govendor](https://github.com/kardianos/govendor) to manage it's dependencies, and currently also checks them into Git to enable a seamless build experience. However should you wish to change / upgrade any of these, you can get govendor, and then run the appropriate commands (e.g sync, fetch etc)
+
+    go get -u github.com/kardianos/govendor
+    govendor sync
+
+*Build it*
 
     go install
     
-Test it
+*Test it*
     
     go test -v ./...
 
-Run it:
+*Run it:*
 
     terrahelp -v 
     
-Want to cross compile it:
+*Want to cross compile it?*
 
     env GOOS=darwin GOARCH=amd64 go build -o=terrahelp-darwin-amd64
     env GOOS=linux GOARCH=amd64 go build -o=terrahelp-linux-amd64
