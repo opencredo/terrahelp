@@ -1,4 +1,4 @@
-## 0.4.2 (Unreleased)
+## 0.4.2
 * [PR-9](https://github.com/opencredo/terrahelp/pull/9) Cater for terraform 0.7.x list and map variables (resolves [#8](https://github.com/opencredo/terrahelp/issues/8))
 * Updated examples and command line docs
 * Builds against Go 1.7.3
