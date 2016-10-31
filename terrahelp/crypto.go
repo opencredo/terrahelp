@@ -18,12 +18,12 @@ type CryptoHandler struct {
 // to perform the cryptographic actions.
 type CryptoHandlerOpts struct {
 	*TransformOpts
-	EncProvider        string
-	EncMode            string
-	NamedEncKey        string
-	SimpleKey          string
-	AllowDoubleEncrypt     bool
-	ExcludeWhitespaceOnly  bool
+	EncProvider           string
+	EncMode               string
+	NamedEncKey           string
+	SimpleKey             string
+	AllowDoubleEncrypt    bool
+	ExcludeWhitespaceOnly bool
 }
 
 // NewDefaultCryptoHandlerOpts creates CryptoHandlerOpts with all the
@@ -34,12 +34,12 @@ func NewDefaultCryptoHandlerOpts() *CryptoHandlerOpts {
 			NewFileTransformable(TfstateFilename, true, ThBkpExtension),
 			NewFileTransformable(TfstateBkpFilename, true, ThBkpExtension)},
 			TfvarsFilename: TfvarsFilename},
-		EncProvider:        ThEncryptProviderSimple,
-		NamedEncKey:        ThNamedEncryptionKey,
-		SimpleKey:          "",
+		EncProvider:           ThEncryptProviderSimple,
+		NamedEncKey:           ThNamedEncryptionKey,
+		SimpleKey:             "",
 		AllowDoubleEncrypt:    true,
 		ExcludeWhitespaceOnly: true,
-		EncMode:            ThEncryptModeFull,
+		EncMode:               ThEncryptModeFull,
 	}
 }
 
@@ -239,7 +239,7 @@ func (t *CryptoHandler) encryptInline(plain []byte, key, tfvf string, dblEncrypt
 		}
 	}
 
-	tfvu := NewTfVars(tfvf,exclWhitespace)
+	tfvu := NewTfVars(tfvf, exclWhitespace)
 	inlineCreds, err := tfvu.Values()
 	if err != nil {
 		return nil, err

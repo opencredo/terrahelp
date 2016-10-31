@@ -27,7 +27,7 @@ func (d *DefaultReplaceables) Values() ([]string, error) {
 // Tfvars provides utility functions pertaining to the
 // terraform.tfvars file
 type Tfvars struct {
-	filename string
+	filename              string
 	excludeWhitespaceOnly bool
 }
 
@@ -62,7 +62,7 @@ func (t *Tfvars) Values() ([]string, error) {
 		case *ast.LiteralType:
 			switch n.Token.Type {
 			case token.STRING:
-				v :=  n.Token.Value().(string)
+				v := n.Token.Value().(string)
 				if v != "" && t.excludeWhitespaceOnly && strings.TrimSpace(v) != "" {
 					vals = append(vals, n.Token.Value().(string))
 				}
