@@ -155,6 +155,11 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 				Usage:       "Permits the double encryption of the content in a file (defaults to true)",
 				Destination: &ctxOpts.AllowDoubleEncrypt,
 			},
+			cli.BoolTFlag{
+				Name:        "exclwhitespace",
+				Usage:       "Excludes the encryption of whitespace only values (defaults to true)",
+				Destination: &ctxOpts.ExcludeWhitespaceOnly,
+			},
 			cli.StringFlag{
 				Name:        "simple-key",
 				EnvVar:      "TH_SIMPLE_KEY",
@@ -395,10 +400,15 @@ func maskCommand() cli.Command {
 				Usage:       "Suppress the creation of backup files before masking (defaults to false)",
 				Destination: &noBackup,
 			},
+			cli.BoolTFlag{
+				Name:        "exclwhitespace",
+				Usage:       "Excludes the masking of whitespace only values (defaults to true)",
+				Destination: &ctxOpts.ExcludeWhitespaceOnly,
+			},
 		},
 		Action: func(c *cli.Context) {
 			verifyStringSliceFileDefault(c, ctxOpts.TransformOpts, false, noBackup, bkpExt)
-			m := terrahelp.NewMasker(ctxOpts, terrahelp.NewTfVars(ctxOpts.TfvarsFilename))
+			m := terrahelp.NewMasker(ctxOpts, terrahelp.NewTfVars(ctxOpts.TfvarsFilename, ctxOpts.ExcludeWhitespaceOnly))
 			err := m.Mask()
 			exitIfError(err)
 		},

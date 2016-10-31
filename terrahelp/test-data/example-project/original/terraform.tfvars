@@ -12,9 +12,14 @@ tf_sensitive_key_2         = "sensitive-value-2-prYh57"
 tf_sensitive_key_3         = "sensitive-value-3-//dfhs//"
 
 # Some more comments
-tf_sensitive_key_4         = "sensitive-value-4 with equals sign i.e. ff=yy"
-# tf_sensitive_key_5         = "encrypted-value-5"
-tf_sensitive_key_6         = "sensitive-value-6"
+tf_sensitive_key_4              = "sensitive-value-4 with equals sign i.e. ff=yy"
+# tf_sensitive_key_5             = "encrypted-value-5"
+tf_sensitive_key_6              = "sensitive-value-6"
+tf_sensitive_key_empty          = ""
+tf_sensitive_key_onlyspaces     = "   "
+tf_sensitive_key_leadspace      = " sensitive-with-leading-space"
+tf_sensitive_key_trailspace     = "sensitive-with-trail-space "
+tf_sensitive_key_leadtrailspace = " sensitive-with-leadtrail-space "
 
 # new list and maps (terraform 0.7.x and higher)
 tf_sensitive_list_vals = [

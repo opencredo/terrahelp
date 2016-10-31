@@ -27,9 +27,10 @@ func NewMasker(ctx *MaskOpts, svh Replaceables) *Masker {
 // to perform the masking action.
 type MaskOpts struct {
 	*TransformOpts
-	MaskChar        string
-	MaskNumChar     int
-	ReplacePrevVals bool
+	MaskChar              string
+	MaskNumChar           int
+	ReplacePrevVals       bool
+	ExcludeWhitespaceOnly bool
 }
 
 func (m *MaskOpts) getMask() string {
