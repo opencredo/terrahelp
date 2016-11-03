@@ -1,5 +1,5 @@
-## 0.4.3-dev (Unreleased)
-* Updated to be compatible with Vault 0.6.2
+## 0.4.3
+* [PR-12](https://github.com/opencredo/terrahelp/pull/12) Updated to be compatible with Vault 0.6.2
 * [PR-11](https://github.com/opencredo/terrahelp/pull/11) Exclude empty strings from detection, and provide config flag for handling whitespace only values (resolves [#10](https://github.com/opencredo/terrahelp/issues/10))
 
 ## 0.4.2

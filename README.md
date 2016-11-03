@@ -30,7 +30,7 @@ Additionally the blog post [Securing Terraform State with Vault](https://www.ope
            terrahelp [global options] command [command options] [arguments...]
 
         VERSION:
-           0.4.0
+           0.4.3
 
         AUTHOR(S):
            https://github.com/opencredo OpenCredo - Nicki Watt
@@ -40,7 +40,8 @@ Additionally the blog post [Securing Terraform State with Vault](https://www.ope
             encrypt		        Uses configured provider to encrypt specified content
             decrypt		        Uses configured provider to decrypt specified content
             mask                Mask will overwrite sensitive data in output or files with a masked value (eg. ******).
-
+            help, h             Shows a list of commands or help for one command
+            
         GLOBAL OPTIONS:
            --help, -h		show help
            --version, -v	print the version
