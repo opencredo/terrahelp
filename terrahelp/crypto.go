@@ -18,11 +18,12 @@ type CryptoHandler struct {
 // to perform the cryptographic actions.
 type CryptoHandlerOpts struct {
 	*TransformOpts
-	EncProvider        string
-	EncMode            string
-	NamedEncKey        string
-	SimpleKey          string
-	AllowDoubleEncrypt bool
+	EncProvider           string
+	EncMode               string
+	NamedEncKey           string
+	SimpleKey             string
+	AllowDoubleEncrypt    bool
+	ExcludeWhitespaceOnly bool
 }
 
 // NewDefaultCryptoHandlerOpts creates CryptoHandlerOpts with all the
@@ -33,11 +34,12 @@ func NewDefaultCryptoHandlerOpts() *CryptoHandlerOpts {
 			NewFileTransformable(TfstateFilename, true, ThBkpExtension),
 			NewFileTransformable(TfstateBkpFilename, true, ThBkpExtension)},
 			TfvarsFilename: TfvarsFilename},
-		EncProvider:        ThEncryptProviderSimple,
-		NamedEncKey:        ThNamedEncryptionKey,
-		SimpleKey:          "",
-		AllowDoubleEncrypt: true,
-		EncMode:            ThEncryptModeFull,
+		EncProvider:           ThEncryptProviderSimple,
+		NamedEncKey:           ThNamedEncryptionKey,
+		SimpleKey:             "",
+		AllowDoubleEncrypt:    true,
+		ExcludeWhitespaceOnly: true,
+		EncMode:               ThEncryptModeFull,
 	}
 }
 
@@ -165,7 +167,7 @@ func (t *CryptoHandler) encrypt(ctx *CryptoHandlerOpts, ci Transformable) error 
 
 func (t *CryptoHandler) encryptBytes(ctx *CryptoHandlerOpts, in []byte) ([]byte, error) {
 	if ctx.InlineMode() {
-		return t.encryptInline(in, ctx.getEncryptionKey(), ctx.TfvarsFilename, ctx.AllowDoubleEncrypt)
+		return t.encryptInline(in, ctx.getEncryptionKey(), ctx.TfvarsFilename, ctx.AllowDoubleEncrypt, ctx.ExcludeWhitespaceOnly)
 	}
 	return t.encryptFullContent(in, ctx.getEncryptionKey(), ctx.AllowDoubleEncrypt)
 }
@@ -227,7 +229,7 @@ func (t *CryptoHandler) encryptFullContent(b []byte, key string, dblEncrypt bool
 }
 
 // tfvf = tfvars file
-func (t *CryptoHandler) encryptInline(plain []byte, key, tfvf string, dblEncrypt bool) ([]byte, error) {
+func (t *CryptoHandler) encryptInline(plain []byte, key, tfvf string, dblEncrypt bool, exclWhitespace bool) ([]byte, error) {
 
 	if !dblEncrypt {
 		r := regexp.MustCompile(thCryptoWrapRegExp)
@@ -237,7 +239,7 @@ func (t *CryptoHandler) encryptInline(plain []byte, key, tfvf string, dblEncrypt
 		}
 	}
 
-	tfvu := NewTfVars(tfvf)
+	tfvu := NewTfVars(tfvf, exclWhitespace)
 	inlineCreds, err := tfvu.Values()
 	if err != nil {
 		return nil, err

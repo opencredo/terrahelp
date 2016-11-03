@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/hcl/hcl/ast"
 	"github.com/hashicorp/hcl/hcl/token"
 	"sort"
+	"strings"
 )
 
 // Replaceables defines the values which should be replaced as part of
@@ -26,11 +27,13 @@ func (d *DefaultReplaceables) Values() ([]string, error) {
 // Tfvars provides utility functions pertaining to the
 // terraform.tfvars file
 type Tfvars struct {
-	filename string
+	filename              string
+	excludeWhitespaceOnly bool
 }
 
-func NewTfVars(f string) *Tfvars {
-	return &Tfvars{filename: f}
+// NewTfVars creates a new Tfvars holder based on the provided filename
+func NewTfVars(f string, excl bool) *Tfvars {
+	return &Tfvars{filename: f, excludeWhitespaceOnly: excl}
 }
 
 // ExtractSensitiveVals returns a list of the sensitive values
@@ -59,7 +62,13 @@ func (t *Tfvars) Values() ([]string, error) {
 		case *ast.LiteralType:
 			switch n.Token.Type {
 			case token.STRING:
-				vals = append(vals, n.Token.Value().(string))
+				v := n.Token.Value().(string)
+				if v != "" && t.excludeWhitespaceOnly && strings.TrimSpace(v) != "" {
+					vals = append(vals, n.Token.Value().(string))
+				}
+				if v != "" && !t.excludeWhitespaceOnly {
+					vals = append(vals, n.Token.Value().(string))
+				}
 			}
 		}
 

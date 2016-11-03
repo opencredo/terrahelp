@@ -1,3 +1,6 @@
+## 0.4.3-dev (Unreleased)
+* Exclude empty strings from detection, and provide config flag for handling whitespace only values (resolves [#9](https://github.com/opencredo/terrahelp/issues/10))
+
 ## 0.4.2
 * [PR-9](https://github.com/opencredo/terrahelp/pull/9) Cater for terraform 0.7.x list and map variables (resolves [#8](https://github.com/opencredo/terrahelp/issues/8))
 * Updated examples and command line docs
