@@ -49,9 +49,11 @@ Additionally the blog post [Securing Terraform State with Vault](https://www.ope
 
 ## Installation
 
-### Pre-built binary
+### Pre-built binaries
 
-An initial pre-built terrahelp binary can be found [here](https://github.com/opencredo/terrahelp/releases/).  
+Available from this repository's releases page [here](https://github.com/opencredo/terrahelp/releases/).
+
+The community has also made it available as an AUR package via https://aur.archlinux.org/packages/terrahelp 
 
 #### OSX, Linux & *BSD
 
