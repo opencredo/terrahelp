@@ -178,7 +178,7 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 			th := f(ctxOpts.EncProvider)
 			err := ctxOpts.ValidateForEncryptDecrypt()
 			exitIfError(err)
-			verifyStringSliceFileDefault(c, ctxOpts.TransformOpts, true, noBackup, bkpExt)
+			setupTransformableItems(c, ctxOpts.TransformOpts, noBackup, bkpExt)
 			err = th.Encrypt(ctxOpts)
 			exitIfError(err)
 		},
@@ -291,7 +291,7 @@ func decryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 			th := f(ctxOpts.EncProvider)
 			err := ctxOpts.ValidateForEncryptDecrypt()
 			exitIfError(err)
-			verifyStringSliceFileDefault(c, ctxOpts.TransformOpts, true, noBackup, bkpExt)
+			setupTransformableItems(c, ctxOpts.TransformOpts, noBackup, bkpExt)
 			err = th.Decrypt(ctxOpts)
 			exitIfError(err)
 		},
@@ -407,7 +407,7 @@ func maskCommand() cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) {
-			verifyStringSliceFileDefault(c, ctxOpts.TransformOpts, false, noBackup, bkpExt)
+			setupTransformableItems(c, ctxOpts.TransformOpts, noBackup, bkpExt)
 			m := terrahelp.NewMasker(ctxOpts, terrahelp.NewTfVars(ctxOpts.TfvarsFilename, ctxOpts.ExcludeWhitespaceOnly))
 			err := m.Mask()
 			exitIfError(err)
@@ -430,16 +430,12 @@ func exitIfError(e error) {
 	}
 }
 
-// Unfortunately the StringSliceFlag struct does not support setting a
-// destination at present as  with the other flags and has some issues
-// if you specify a default value directly
-// (see https://github.com/codegangsta/cli/issues/160,
-// https://github.com/codegangsta/cli/issues/350) so we do it here
-// ourselves, as well as transforming the result into an appropriate
-// array of Transformable's
-func verifyStringSliceFileDefault(c *cli.Context,
+// Determines whether the source of items to transform (encrypt/decrypt/mask)
+// should be based on stdIn (no files specified) or specific files as provided
+// via the command line. Create and set up the appropriate Transformables
+// as options for further processing.
+func setupTransformableItems(c *cli.Context,
 	ctxOpts *terrahelp.TransformOpts,
-	useTfstateDefaults bool,
 	noBackup bool, bkpExt string) {
 	files := c.StringSlice("file")
 
