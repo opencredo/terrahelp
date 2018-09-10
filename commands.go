@@ -22,7 +22,7 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 	return cli.Command{
 		Name:  "encrypt",
 		Usage: "Uses configured provider to encrypt specified content",
-		Description: "Using either the 'simple' (default) or 'vault' provider, encrypt will ensure that the relavent content\n" +
+		Description: "Using either the 'simple' (default) or 'vault' provider, encrypt will ensure that the relevant content\n" +
 			"   is encrypted in either full, or inline mode. You may want to filter out certain sensitive content from the\n" +
 			"   output of terraform commands such as a 'terraform plan' or 'terraform apply'. Terrahelp always assumes \n" +
 			"   you are piping your content in (for example from stdin) unless you explicitly specify file(s) to read in from \n" +
@@ -31,7 +31,7 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 			"   * The standard terraform commands will be performed i.e. \n" +
 			"       terraform plan\n" +
 			"       terraform apply\n" +
-			"   * Then when happy, the encryption can be applied (for example agains the tfstate files) i.e.\n" +
+			"   * Then when happy, the encryption can be applied (for example against the tfstate files) i.e.\n" +
 			"       terrahelp encrypt -file=terraform.tfstate -file=terraform.tfstate.backup  \n" +
 			"   * Finally, if required, these files can then be checked in to version control.\n\n" +
 			"   The desired 'provider' and well as 'mode' can be supplied as CLI arguments, or via the TH_ENCRYPTION_PROVIDER \n" +
@@ -46,7 +46,7 @@ func encryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 			"   Inline encrypting works by detecting sensitive values within the state files and then replaces them with \n" +
 			"   encrypted values. Terrahelp assumes all sensitive values are defined as values within the terraform.tfvars \n" +
 			"   file, which just by way of recap should NEVER be checked into version control! Terrahelp then uses the  \n" +
-			"   terraform.tfvars file to identify which values are considered sensitive, searches for any occurence \n" +
+			"   terraform.tfvars file to identify which values are considered sensitive, searches for any occurrence \n" +
 			"   of these values within the provided content and essentially does a find and replace of all the sensitive values \n" +
 			"   with appropriately encrypted ones. \n\n" +
 
@@ -194,7 +194,7 @@ func decryptCommand(f func(provider string) *terrahelp.CryptoHandler) cli.Comman
 	return cli.Command{
 		Name:  "decrypt",
 		Usage: "Uses configured provider to decrypt specified content",
-		Description: "Using either the 'simple' (default) or 'vault' provider, decrypt will ensure that the relavent content\n" +
+		Description: "Using either the 'simple' (default) or 'vault' provider, decrypt will ensure that the against content\n" +
 			"   is decrypted and restored back to its pre-encrypted state. You may previously have filtered, and possibly saved\n" +
 			"   as a file, the output of terraform commands such as a 'terraform plan' or 'terraform apply' which may have contained\n" +
 			"   certain sensitive content. Terrahelp always assumes you are piping your content in (for example from stdin) unless \n" +
@@ -420,7 +420,7 @@ func maskCommand() cli.Command {
 // so until then we have to do a bit of an ugly emergency exit ourselves
 func exitIfError(e error) {
 	if e != nil {
-		fmt.Printf("ERROR occured : %s\n", e)
+		fmt.Printf("ERROR occurred : %s\n", e)
 		switch e.(type) {
 		case *terrahelp.CryptoWrapError:
 			os.Exit(cryptoWrapErrorExitCode)
