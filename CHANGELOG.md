@@ -1,4 +1,5 @@
 ## 0.4.4 (Unreleased)
+* Build against Go 1.11.x, Vault 0.11.1, HCL 1.0.0
 * Build against go 1.8.2
 
 ## 0.4.3
