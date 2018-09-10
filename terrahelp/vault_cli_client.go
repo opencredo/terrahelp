@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+// VaultCliClient provides a wrapper around calling Vault
+// via the CLI and uses it to provide the required functionality
 type VaultCliClient struct {
 }
 
@@ -16,6 +18,7 @@ type vaultOutput struct {
 
 var _ VaultClient = &VaultCliClient{}
 
+// NewVaultCliClient creates a new VaultCliClient
 func NewVaultCliClient() (*VaultCliClient, error) {
 
 	return &VaultCliClient{}, nil

@@ -89,6 +89,7 @@ func NewVaultEncrypter() (*VaultEncrypter, error) {
 	return createVaultEncrypter(vc)
 }
 
+// NewVaultCliEncrypter creates a new CLI based VaultEncrypter
 func NewVaultCliEncrypter() (*VaultEncrypter, error) {
 	var vc VaultClient
 	vc, err := NewVaultCliClient()

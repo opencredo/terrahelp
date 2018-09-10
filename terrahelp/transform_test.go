@@ -56,11 +56,11 @@ func TestStreamTransformable_read(t *testing.T) {
 
 func TestFileTransformable_read_DirError(t *testing.T) {
 
-	f, err := ioutil.TempDir("", "testdir")
+	f, _ := ioutil.TempDir("", "testdir")
 	sci := NewFileTransformable(f, false, "")
 
 	// When
-	_, err = sci.read()
+	_, err := sci.read()
 
 	// Then
 	assert.EqualError(t, err, fmt.Sprintf("%s must be a valid file", f))

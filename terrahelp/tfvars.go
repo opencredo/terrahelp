@@ -13,13 +13,18 @@ import (
 // Replaceables defines the values which should be replaced as part of
 // various transformations actions
 type Replaceables interface {
+
+	// Values returns the list of values to replace or an error
 	Values() ([]string, error)
 }
 
+// DefaultReplaceables provides the default implemenation of Replaceables.
+// Stores values to replace as strings
 type DefaultReplaceables struct {
 	Vals []string
 }
 
+// Values returns the list of values to replace
 func (d *DefaultReplaceables) Values() ([]string, error) {
 	return d.Vals, nil
 }
@@ -36,7 +41,7 @@ func NewTfVars(f string, excl bool) *Tfvars {
 	return &Tfvars{filename: f, excludeWhitespaceOnly: excl}
 }
 
-// ExtractSensitiveVals returns a list of the sensitive values
+// Values returns a list of the sensitive values
 // which were detected in the provided tfvars file
 func (t *Tfvars) Values() ([]string, error) {
 	// Read tfvars file
