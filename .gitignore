@@ -5,6 +5,7 @@
 *.ipr
 example.tf
 bin/
+dist/
 modules-dev/
 pkg/
 vendor/
