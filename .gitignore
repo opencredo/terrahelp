@@ -7,6 +7,7 @@ example.tf
 bin/
 modules-dev/
 pkg/
+vendor/
 examples/tfstate-encrypt/*.tfstate*
 .vagrant/
 *.log
