@@ -14,3 +14,4 @@ examples/tfstate-encrypt/*.tfstate*
 *~
 .*.swp
 /terrahelp-*
+.envrc
