@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/opencredo/terrahelp/terrahelp"
 )
 
@@ -416,7 +416,7 @@ func maskCommand() cli.Command {
 }
 
 // At present code required to add decent exit code support in the cli library
-// is awaiting a 2.0. release (https://github.com/codegangsta/cli/pull/266)
+// is awaiting a 2.0. release (https://github.com/urfave/cli/pull/266)
 // so until then we have to do a bit of an ugly emergency exit ourselves
 func exitIfError(e error) {
 	if e != nil {
