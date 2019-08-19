@@ -87,11 +87,10 @@ git clone https://github.com/opencredo/terrahelp.git "$GOPATH/src/github.com/ope
 cd "$GOPATH/src/github.com/opencredo/terrahelp"
 ```
 
-### Download Dependencies
+### Dependencies
 
-Terrahelp uses Go modules to manage it's dependencies.  The make file provides a target to vendor the dependencies if required.
-
-    make dependencies
+Terrahelp uses Go modules to manage it's dependencies.  During Go's transition to switching on modules by default, Terrahelp is setup to buildusing the vendor directory.
+Supportive targets are prvoided to allow the vendor directory to be recreated if required.
 
 ### Building and Executing
 
@@ -127,6 +126,23 @@ A number of work directories will have been created through the previous build s
 The following command can be used to return the project back to a pre build state.
 
     make clean
+
+### Dependency management
+
+The following targets have been created to allow dependencies to be managed through Go modules.  As mentioned before Terrahelp builds using the vendor directory.
+
+* `make dependencies`
+  * Downloads the dependecies to the Go modules cache.
+* `make tidy-dependencies`
+  * Adds missing and removes unused modules.
+* `make vendor-dependencies`
+  * Copies the dependencies into the local vendor directory.
+* `make clean-dependencies`
+  * Removes the local vendor directory.
+  
+**NOTE:**  The Makefile defines a variable called `BUILDARGS` and this is currently set with `-mod=vendor`.  This instructs various go commands to use the vendor directory.  This can be overridden to build to project using standard go module flows.
+
+    BUILDARGS='' make build
 
 [Travis-Image]: https://travis-ci.org/opencredo/terrahelp.svg?branch=master
 [Travis-Url]: https://travis-ci.org/opencredo/terrahelp

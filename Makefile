@@ -16,7 +16,7 @@ VERSION ?= vlocal
 COMMIT = $(shell git rev-parse HEAD)
 
 LDFLAGS := -ldflags "-X=main.version=$(VERSION)"
-BUILDARGS := -mod=vendor
+BUILDARGS ?= -mod=vendor
 
 # Go source files, excluding vendor directory
 SRC := $(shell find . -type f -name '*.go' -not -path "./vendor/*")
