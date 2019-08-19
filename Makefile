@@ -16,13 +16,15 @@ VERSION ?= vlocal
 COMMIT = $(shell git rev-parse HEAD)
 
 LDFLAGS := -ldflags "-X=main.version=$(VERSION)"
+BUILDARGS := -mod vendor
 
 # Go source files, excluding vendor directory
 SRC := $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 $(TARGET): $(SRC)
-	@ mkdir -p $(BIN)
-	@ go build $(LDFLAGS) -o $(BIN)/$(TARGET) .
+	mkdir -p $(BIN)
+	go build $(BUILDARGS) $(LDFLAGS) -o $(BIN)/$(TARGET) .
+.PHONY: $(TARGET)
 
 build: $(TARGET)
 	@ echo "==> Building $(TARGET)"
@@ -35,7 +37,7 @@ test: dependencies
 
 install:
 	@ echo "==> Installing $(TARGET)"
-	@ go install $(LDFLAGS)
+	@ go install $(BUILDARGS) $(LDFLAGS)
 .PHONY: install
 
 uninstall: clean
@@ -47,7 +49,7 @@ $(PLATFORMS):
 	@ echo "==> Building $(OS) distribution"
 	@ mkdir -p $(BIN)/$(OS)/$(ARCH)
 	@ mkdir -p $(DIST)
-	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) go build $(LDFLAGS) -o $(BIN)/$(OS)/$(ARCH)/$(TARGET)
+	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) go build $(BUILDARGS) $(LDFLAGS) -o $(BIN)/$(OS)/$(ARCH)/$(TARGET)
 	cp -f $(BIN)/$(OS)/$(ARCH)/$(TARGET) $(DIST)/$(TARGET)-$(OS)-$(ARCH)
 .PHONY: $(PLATFORMS)
 
