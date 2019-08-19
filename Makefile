@@ -32,7 +32,7 @@ build: $(TARGET)
 
 test: dependencies
 	@ echo "==> Testing $(TARGET)"
-	@ go test -v ./...
+	@ go test $(BUILDARGS) -v ./...
 .PHONY: test
 
 install:
@@ -59,7 +59,7 @@ dist: $(PLATFORMS)
 
 check:
 	@ echo "==> Checking $(TARGET)"
-	@ go vet ./...
+	@ go vet $(BUILDARGS) ./...
 .PHONY: check
 
 clean:
