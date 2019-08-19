@@ -32,7 +32,7 @@ build: $(TARGET)
 
 test: dependencies
 	@ echo "==> Testing $(TARGET)"
-	@ go test $(BUILDARGS) -v ./...
+	@ go test -v $(BUILDARGS) ./...
 .PHONY: test
 
 install:
