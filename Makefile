@@ -30,7 +30,7 @@ build: $(TARGET)
 	@ echo "==> Building $(TARGET)"
 .PHONY: build
 
-test: dependencies
+test:
 	@ echo "==> Testing $(TARGET)"
 	@ go test -v $(BUILDARGS) ./...
 .PHONY: test
