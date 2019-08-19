@@ -13,7 +13,6 @@ matrix:
   allow_failures:
     - go: tip
 script:
-  - make dependencies
   - make check
   - make test
 before_deploy:
