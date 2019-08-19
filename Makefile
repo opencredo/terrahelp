@@ -16,7 +16,7 @@ VERSION ?= vlocal
 COMMIT = $(shell git rev-parse HEAD)
 
 LDFLAGS := -ldflags "-X=main.version=$(VERSION)"
-BUILDARGS := -mod vendor
+BUILDARGS := -mod=vendor
 
 # Go source files, excluding vendor directory
 SRC := $(shell find . -type f -name '*.go' -not -path "./vendor/*")
@@ -59,7 +59,7 @@ dist: $(PLATFORMS)
 
 check:
 	@ echo "==> Checking $(TARGET)"
-	@ go vet $(BUILDARGS) ./...
+	@ go vet $(BUILDARGS)
 .PHONY: check
 
 clean:
@@ -78,6 +78,11 @@ vendor-dependencies:
 	@ echo "==> Downloading dependencies for $(TARGET)"
 	@ go mod vendor
 .PHONY: vendor-dependencies
+
+tidy-dependencies:
+	@ echo "==> Tidying dependencies for $(TARGET)"
+	@ go mod tidy
+.PHONY: tidy-dependencies
 
 clean-dependencies:
 	@ echo "==> Cleaning dependencies for $(TARGET)"
