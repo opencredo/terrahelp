@@ -8,7 +8,6 @@ bin/
 dist/
 modules-dev/
 pkg/
-vendor/
 examples/tfstate-encrypt/*.tfstate*
 .vagrant/
 *.log
