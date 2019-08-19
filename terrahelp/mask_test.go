@@ -52,9 +52,17 @@ func TestMasker_Mask_StreamedSensitiveData(t *testing.T) {
 	// only the known sensitive data) into stdIn
 	stdinSim.write(
 		`
-The Terraform execution plan has been generated and is shown below ...
--/+ template_file.example
-    rendered:  "sensitive-value-1-AK#%DJGHS*G"`)
+Terraform will perform the following actions:
+
+  # template_dir.config must be replaced
+  + resource "template_dir" "config" {
+      + destination_dir = "./renders"
+      + id              = "4278f6895f67aa77cfbdac8ce2c7342275116eec" -> (known after apply)
+      + source_dir      = "./templates"
+      + vars            = {
+          "msg1" = "sensitive-value-1-AK#%DJGHS*G"
+        }
+    }`)
 	err := m.Mask()
 
 	// Then the output should have that sensitive data masked
@@ -62,9 +70,17 @@ The Terraform execution plan has been generated and is shown below ...
 	b := stdoutSim.getAllContent()
 	assert.Equal(t,
 		`
-The Terraform execution plan has been generated and is shown below ...
--/+ template_file.example
-    rendered:  "******"`, b)
+Terraform will perform the following actions:
+
+  # template_dir.config must be replaced
+  + resource "template_dir" "config" {
+      + destination_dir = "./renders"
+      + id              = "4278f6895f67aa77cfbdac8ce2c7342275116eec" -> (known after apply)
+      + source_dir      = "./templates"
+      + vars            = {
+          "msg1" = "******"
+        }
+    }`, b)
 }
 
 func TestMasker_Mask_StreamedNothing2KnownSensitiveDataTransform(t *testing.T) {
@@ -79,11 +95,18 @@ func TestMasker_Mask_StreamedNothing2KnownSensitiveDataTransform(t *testing.T) {
 	// a transition from nothing to the known sensitive data) into stdIn
 	stdinSim.write(
 		`
-The Terraform execution plan has been generated and is shown below ...
--/+ template_file.example
-    rendered:  "\n blah blah"
-    vars.#:    "3" => "3"
-    vars.msg1: "" => "sensitive-value-1-AK#%DJGHS*G" (forces new resource)`)
+Terraform will perform the following actions:
+
+  # template_dir.config must be replaced
+-/+ resource "template_dir" "config" {
+        destination_dir = "./renders"
+      ~ id              = "4278f6895f67aa77cfbdac8ce2c7342275116eec" -> (known after apply)
+        source_dir      = "./templates"
+      ~ vars            = { # forces replacement
+            "msg1" = "normal value 1"
+          ~ "msg2" = "" -> "sensitive-value-1-AK#%DJGHS*G"
+        }
+    }`)
 	err := m.Mask()
 
 	// Then the output should have that sensitive data masked
@@ -91,11 +114,18 @@ The Terraform execution plan has been generated and is shown below ...
 	b := stdoutSim.getAllContent()
 	assert.Equal(t,
 		`
-The Terraform execution plan has been generated and is shown below ...
--/+ template_file.example
-    rendered:  "\n blah blah"
-    vars.#:    "3" => "3"
-    vars.msg1: "" => "******" (forces new resource)`, b)
+Terraform will perform the following actions:
+
+  # template_dir.config must be replaced
+-/+ resource "template_dir" "config" {
+        destination_dir = "./renders"
+      ~ id              = "4278f6895f67aa77cfbdac8ce2c7342275116eec" -> (known after apply)
+        source_dir      = "./templates"
+      ~ vars            = { # forces replacement
+            "msg1" = "normal value 1"
+          ~ "msg2" = "" -> "******"
+        }
+    }`, b)
 }
 
 func TestMasker_Mask_StreamedPrevVal2KnownSensitiveDataTransform(t *testing.T) {
@@ -104,18 +134,26 @@ func TestMasker_Mask_StreamedPrevVal2KnownSensitiveDataTransform(t *testing.T) {
 	defer stdinSim.end()
 	defer stdoutSim.end()
 	m := NewMasker(ctx, &DefaultReplaceables{
-		[]string{"sensitive-value-1-AK#%DJGHS*G"}})
+		[]string{"sensitive-value-2"}})
 
 	// When we simulate piping this content (which contains
 	// a transition from a previous sensitive value to new
 	// known sensitive data) into stdIn
 	stdinSim.write(
 		`
-The Terraform execution plan has been generated and is shown below ...
--/+ template_file.example
-    rendered:  "\n blah blah"
-    vars.#:    "3" => "3"
-    vars.msg1: "some-prev-sensitive-value-1\"" => "sensitive-value-1-AK#%DJGHS*G" (forces new resource)`)
+Terraform will perform the following actions:
+
+  # template_dir.config must be replaced
+-/+ resource "template_dir" "config" {
+        destination_dir = "./renders"
+      ~ id              = "4278f6895f67aa77cfbdac8ce2c7342275116eec" -> (known after apply)
+        source_dir      = "./templates"
+      ~ vars            = { # forces replacement
+            "msg1" = "normal value 1"
+          ~ "msg2" = "sensitive-value-2-//dfhs//" -> "sensitive-value-2"
+        }
+    }`)
+
 	err := m.Mask()
 
 	// Then the output should have both the previous and
@@ -124,11 +162,18 @@ The Terraform execution plan has been generated and is shown below ...
 	b := stdoutSim.getAllContent()
 	assert.Equal(t,
 		`
-The Terraform execution plan has been generated and is shown below ...
--/+ template_file.example
-    rendered:  "\n blah blah"
-    vars.#:    "3" => "3"
-    vars.msg1: "******" => "******" (forces new resource)`, b)
+Terraform will perform the following actions:
+
+  # template_dir.config must be replaced
+-/+ resource "template_dir" "config" {
+        destination_dir = "./renders"
+      ~ id              = "4278f6895f67aa77cfbdac8ce2c7342275116eec" -> (known after apply)
+        source_dir      = "./templates"
+      ~ vars            = { # forces replacement
+            "msg1" = "normal value 1"
+          ~ "msg2" = "******" -> "******"
+        }
+    }`, b)
 }
 
 func TestMasker_Mask_StreamedPrevVal2KnownSensitiveDataTransform_IgnorePrev(t *testing.T) {
@@ -146,11 +191,18 @@ func TestMasker_Mask_StreamedPrevVal2KnownSensitiveDataTransform_IgnorePrev(t *t
 	// known sensitive data) into stdIn
 	stdinSim.write(
 		`
-The Terraform execution plan has been generated and is shown below ...
--/+ template_file.example
-    rendered:  "\n blah blah"
-    vars.#:    "3" => "3"
-    vars.msg1: "some-prev-sensitive-value-1\"" => "sensitive-value-1-AK#%DJGHS*G" (forces new resource)`)
+Terraform will perform the following actions:
+
+  # template_dir.config must be replaced
+-/+ resource "template_dir" "config" {
+        destination_dir = "./renders"
+      ~ id              = "4278f6895f67aa77cfbdac8ce2c7342275116eec" -> (known after apply)
+        source_dir      = "./templates"
+      ~ vars            = { # forces replacement
+            "msg1" = "normal value 1"
+          ~ "msg2" = "sensitive-value-2-//dfhs//" -> "sensitive-value-2"
+        }
+    }`)
 	err := m.Mask()
 
 	// Then only the new known sensitive values should be masked
@@ -158,9 +210,16 @@ The Terraform execution plan has been generated and is shown below ...
 	b := stdoutSim.getAllContent()
 	assert.Equal(t,
 		`
-The Terraform execution plan has been generated and is shown below ...
--/+ template_file.example
-    rendered:  "\n blah blah"
-    vars.#:    "3" => "3"
-    vars.msg1: "some-prev-sensitive-value-1\"" => "******" (forces new resource)`, b)
+Terraform will perform the following actions:
+
+  # template_dir.config must be replaced
+-/+ resource "template_dir" "config" {
+        destination_dir = "./renders"
+      ~ id              = "4278f6895f67aa77cfbdac8ce2c7342275116eec" -> (known after apply)
+        source_dir      = "./templates"
+      ~ vars            = { # forces replacement
+            "msg1" = "normal value 1"
+          ~ "msg2" = "sensitive-value-2-//dfhs//" -> "sensitive-value-2"
+        }
+    }`, b)
 }

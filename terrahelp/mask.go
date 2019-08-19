@@ -2,6 +2,7 @@ package terrahelp
 
 import (
 	"fmt"
+	"github.com/acarl005/stripansi"
 	"log"
 	"regexp"
 	"strings"
@@ -53,8 +54,8 @@ const (
 	ThMaskChar    = "*"
 	ThMaskCharNum = 6
 
-	ThPrev2CurrPattern        = "\"(.+)\"\\s*=>\\s*\"(\\%s*)\""
-	ThPrev2CurrReplacePattern = "\"%s\" => \"%s\""
+	ThPrev2CurrPattern        = "= \"(.+)\"\\s*->\\s*\"(\\%s*)\""
+	ThPrev2CurrReplacePattern = "= \"%s\" -> \"%s\""
 )
 
 // Mask will ensure the appropriate areas of the input content
@@ -104,8 +105,8 @@ func (m *Masker) mask(t Transformable) error {
 
 func (m *Masker) maskBytes(plain []byte) ([]byte, error) {
 
-	// Replace known sensitive values
-	inlinedText := string(plain)
+	// Convert and strip out the ascii colours.
+	inlinedText := stripansi.Strip(string(plain))
 	sensitiveVals, err := m.replacables.Values()
 	if err != nil {
 		return nil, err
