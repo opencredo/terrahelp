@@ -11,7 +11,7 @@ pkg/
 
 examples/**/.terraform
 examples/**/*.tfstate*
-examples/mask/renders
+examples/**/renders
 
 .vagrant/
 *.log

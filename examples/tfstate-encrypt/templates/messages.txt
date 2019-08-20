@@ -1,0 +1,7 @@
+msg_out1 = ${msg1}
+msg_out2 = ${msg2}
+msg_out3 = ${msg3}
+msg_out4 = ${msg4}
+msg_out5 = ${msg5}
+msg_out6 = ${msg6}
+msg_out7 = ${msg7}
