@@ -8,9 +8,10 @@ bin/
 dist/
 modules-dev/
 pkg/
+
 examples/**/.terraform
 examples/**/*.tfstate*
-example/mask/renders/*
+examples/mask/renders
 
 .vagrant/
 *.log
