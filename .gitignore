@@ -8,7 +8,10 @@ bin/
 dist/
 modules-dev/
 pkg/
-examples/tfstate-encrypt/*.tfstate*
+examples/**/.terraform
+examples/**/*.tfstate*
+example/mask/renders/*
+
 .vagrant/
 *.log
 *.bak
