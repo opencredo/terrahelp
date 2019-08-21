@@ -8,7 +8,7 @@ import (
 	"github.com/opencredo/terrahelp/terrahelp"
 )
 
-var version string
+var version = "0.7.0-dev"
 
 func main() {
 

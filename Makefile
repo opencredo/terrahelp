@@ -12,10 +12,15 @@ PLATFORMS ?= darwin linux
 ARCH ?= amd64
 OS = $(word 1, $@)
 
-VERSION ?= vlocal
+VERSION ?=
 COMMIT = $(shell git rev-parse HEAD)
 
-LDFLAGS := -ldflags "-X=main.version=$(VERSION)"
+ifeq ($(VERSION),)
+    LDFLAGS := -ldflags ""
+else
+    LDFLAGS := -ldflags "-X=main.version=$(VERSION)"
+endif
+
 BUILDARGS ?= -mod=vendor
 
 # Go source files, excluding vendor directory
