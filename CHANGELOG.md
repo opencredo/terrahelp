@@ -1,8 +1,19 @@
-## 0.4.4 (Unreleased)
-* Expanded Makefile and updated README.md
-* Build against Go 1.12.x, vault/api v1.0.4, HCL v1.0.0
-* Build against Go 1.11.x, Vault 0.11.1, HCL v1.0.0
-* Build against go 1.8.2
+## 0.7.0 (Unreleased)
+
+Enhancements:
+* Vault API updated to v1.0.4 to enable expanded VAULT environment variables.
+* codegangsta/cli package switched to urfave/cli v1.21.0
+* Test data and Examples updated to reflect Terraform 0.12.x syntax
+* Dependencies managed through Go Modules.
+* Expanded Makefile and .travis.yml
+* Builds against Go 1.11, 1.12 and tip
+
+**Notes:**
+* **This release requires Terraform 0.12.x**
+
+## 0.6.3
+
+Marked as an official release of Terrahelp covering functionality in pre-release v0.4.3
 
 ## 0.4.3
 * [PR-12](https://github.com/opencredo/terrahelp/pull/12) Updated to be compatible with Vault 0.6.2
