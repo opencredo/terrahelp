@@ -1,4 +1,5 @@
-## 0.4.4 (Unreleased)
+## 0.7.0 (Unreleased)
+* Updated to manage dependencies through Go Modules
 * Build against Go 1.11.x, Vault 0.11.1, HCL 1.0.0
 * Build against go 1.8.2
 

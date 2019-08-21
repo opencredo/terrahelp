@@ -1,6 +1,8 @@
-test: deps
-	go test -v ./...
+BUILDARGS ?= -mod=vendor
 
-build: deps
-	go build -o ${GOPATH}/bin/terrahelp
+test:
+	go test $(BUILDARGS) -v ./...
+
+build:
+	go build $(BUILDARGS) -o ${GOPATH}/bin/terrahelp
 
