@@ -1,8 +1,7 @@
-## 0.7.0 (Unreleased)
+## 0.7.0
 * [PR-19](https://github.com/opencredo/terrahelp/pull/19) Build against Go 1.13 and manages dependencies through GO Modules (resolved [#18](https://github.com/opencredo/terrahelp/issues/18))
 * [PR-19](https://github.com/opencredo/terrahelp/pull/19) Builds against Vault API v1.0.4 (resolves [#16](https://github.com/opencredo/terrahelp/issues/16))
 * [PR-19](https://github.com/opencredo/terrahelp/pull/19) Makefile targets expanded to simplify Travis file.
-
 
 ## 0.4.3
 * [PR-12](https://github.com/opencredo/terrahelp/pull/12) Updated to be compatible with Vault 0.6.2
