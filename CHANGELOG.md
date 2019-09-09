@@ -1,5 +1,5 @@
 ## 0.7.1 (unreleased)
-* [PR-21](https://github.com/opencredo/terrahelp/pull/21) Updates Travis deploy credentials for Github releases 
+* [PR-21](https://github.com/opencredo/terrahelp/pull/21) Updates Travis deploy credentials for Github releases (resolved [#20](https://github.com/opencredo/terrahelp/issues/20))
 
 ## 0.7.0
 * [PR-19](https://github.com/opencredo/terrahelp/pull/19) Build against Go 1.13 and manages dependencies through GO Modules (resolved [#18](https://github.com/opencredo/terrahelp/issues/18))
