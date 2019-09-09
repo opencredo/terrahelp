@@ -5,9 +5,14 @@
 *.ipr
 example.tf
 bin/
+dist/
 modules-dev/
 pkg/
-examples/tfstate-encrypt/*.tfstate*
+
+examples/**/.terraform
+examples/**/*.tfstate*
+examples/**/renders
+
 .vagrant/
 *.log
 *.bak
