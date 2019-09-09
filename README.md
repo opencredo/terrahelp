@@ -2,9 +2,9 @@
 [![ReportCard][ReportCard-Image]][ReportCard-Url]
 
 # Terrahelp
-##### Terraforming, with a little help from your friends
+##### terraforming, with a little help from your friends
 
-Terrahelp is as a command line utility written in [Go](https://golang.org) and is aimed at 
+`terrahelp` is as a command line utility written in [Go](https://github.com/golang/go) and is aimed at 
 providing supplementary functionality which can sometimes prove useful when working with 
 [Terraform](https://www.terraform.io). 
 
@@ -30,7 +30,7 @@ Additionally the blog post [Securing Terraform State with Vault](https://www.ope
            terrahelp [global options] command [command options] [arguments...]
 
         VERSION:
-           X.X.X
+           0.4.3
 
         AUTHOR(S):
            https://github.com/opencredo OpenCredo - Nicki Watt
@@ -51,9 +51,9 @@ Additionally the blog post [Securing Terraform State with Vault](https://www.ope
 
 ### Pre-built binaries
 
-Available from the Terrahelp repository's [releases page](https://github.com/opencredo/terrahelp/releases)
+Available from this repository's releases page [here](https://github.com/opencredo/terrahelp/releases/).
 
-The community has also made it available as a [Terrahelp AUR package](https://aur.archlinux.org/packages/terrahelp) 
+The community has also made it available as an AUR package via https://aur.archlinux.org/packages/terrahelp 
 
 #### OSX, Linux & *BSD
 
@@ -68,81 +68,41 @@ And run it:
 
 #### Windows
 
-Not yet supported
+Not here yet ...
 
-## Build from source
+### Build it yourself  
 
-### Prerequisites
+To set up your Go environment - look [here](https://golang.org/doc/code.html).
 
-Install Go (Terrahelp is currently built against 1.13.x).  The following official resources will guide you through your environment setup. 
+Install Go (Terrahelp is currently built against 1.7.3)
 
-* [Getting Started](https://golang.org/doc/install)
-* [Go Documentation](https://golang.org/doc)
+    mkdir -p "$GOPATH/src/github.com/opencredo/"
+    git clone https://github.com/opencredo/terrahelp.git "$GOPATH/src/github.com/opencredo/terrahelp"
+    cd "$GOPATH/src/github.com/opencredo/terrahelp"
 
-Clone the Terrahelp repository.
+*Dependencies*
 
-```bash
-mkdir -p "$GOPATH/src/github.com/opencredo/"
-git clone https://github.com/opencredo/terrahelp.git "$GOPATH/src/github.com/opencredo/terrahelp"
-cd "$GOPATH/src/github.com/opencredo/terrahelp"
-```
+Terrahelp uses [govendor](https://github.com/kardianos/govendor) to manage it's dependencies, and currently also checks them into Git to enable a seamless build experience. However should you wish to change / upgrade any of these, you can get govendor, and then run the appropriate commands (e.g sync, fetch etc)
 
-### Dependencies
+    go get -u github.com/kardianos/govendor
+    govendor sync
 
-Terrahelp uses Go modules to manage it's dependencies.  During Go's transition to switching on modules by default, Terrahelp is setup to buildusing the vendor directory.
-Supportive targets are prvoided to allow the vendor directory to be recreated if required.
+*Build it*
 
-### Building and Executing
-
-After a build has completed successfully a binary will be built and placed into a local bin directory.  The following commands build and execute terrahelp.
-
-    make build
-    ./bin/terrahelp -v 
+    go install
     
-### Testing
+*Test it*
     
-    make test
+    go test -v ./...
 
-### Installing and Executing
+*Run it:*
 
-Assuming that your Go environment is setup correctly, an installed binary will be placed in your $GOPATH/bin directory.
-The following commands install and execute Terrahelp.
+    terrahelp -v 
+    
+*Want to cross compile it?*
 
-    make install
-    terrahelp -v
-
-### Want to cross compile it?* 
-
-The make file allows both OSX and Linux binaries to be created at the same time or individually.  
-The following commands show joint creation followed by OSX, (darwin) then Linux creation.  All cross compiled binaries will be placed in a `dist` directory.
-
-    make dist
-    make darwin
-    make linux
-
-### Clean your project
-
-A number of work directories will have been created through the previous build steps. The local `bin` and `dist` directories will contain binaries.
-The following command can be used to return the project back to a pre build state.
-
-    make clean
-
-### Dependency management
-
-The following targets have been created to allow dependencies to be managed through Go modules.  As mentioned before Terrahelp builds using the vendor directory.
-
-* `make dependencies`
-  * Downloads the dependecies to the Go modules cache.
-* `make tidy-dependencies`
-  * Adds missing and removes unused modules.
-* `make vendor-dependencies`
-  * Copies the dependencies into the local vendor directory.
-* `make clean-dependencies`
-  * Removes the local vendor directory.
-  
-**NOTE:**  The Makefile defines a variable called `BUILDARGS` and this is currently set with `-mod=vendor`.  This instructs various go commands to use the vendor directory.  This can be overridden to build to project using standard go module flows.
-
-    BUILDARGS='' make build
+    env GOOS=darwin GOARCH=amd64 go build -o=terrahelp-darwin-amd64
+    env GOOS=linux GOARCH=amd64 go build -o=terrahelp-linux-amd64
 
 [Travis-Image]: https://travis-ci.org/opencredo/terrahelp.svg?branch=master
 [Travis-Url]: https://travis-ci.org/opencredo/terrahelp
