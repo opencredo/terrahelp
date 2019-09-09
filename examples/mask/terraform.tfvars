@@ -7,9 +7,9 @@
 # Some comment
 pretend_aws_access_key     = "madeup-aws-access-key-PEJFNS"
 pretend_aws_secret_key     = "madeup-aws-secret-key-KGSDGH"
-tf_sensitive_key_1         = "sensitive-value-1-AK#%DJGHS*G"
+tf_sensitive_key_1         = "sensitive-value-1-AK#"
 tf_sensitive_key_2         = "sensitive-value-2-prYh57"
-tf_sensitive_key_3         = "sensitive-value-3-//dfhs//"
+tf_sensitive_key_3         = "sensitive-value-3"
 
 # Some more comments
 tf_sensitive_key_4         = "sensitive-value-4 with equals sign i.e. ff=yy"
