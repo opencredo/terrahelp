@@ -1,6 +1,6 @@
 module github.com/opencredo/terrahelp
 
-go 1.12
+go 1.13
 
 require (
 	github.com/codegangsta/cli v1.20.0
