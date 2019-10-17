@@ -66,6 +66,12 @@ And run it:
 
     terrahelp -help
 
+##### OSX Additional Step
+
+`terrahelp` may be prevented from running if you downloaded it using a web browser. To fix this, remove the quarantine attribute before running again:
+ 
+    xattr -d com.apple.quarantine terrahelp
+
 #### Windows
 
 Not here yet ...
