@@ -39,8 +39,8 @@ Additionally the blog post [Securing Terraform State with Vault](https://www.ope
             vault-autoconfig	Auto configures Vault with a basic setup to support encrypt and decrypt actions.
             encrypt		        Uses configured provider to encrypt specified content
             decrypt		        Uses configured provider to decrypt specified content
-            mask                Mask will overwrite sensitive data in output or files with a masked value (eg. ******).
-            help, h             Shows a list of commands or help for one command
+            mask                    Mask will overwrite sensitive data in output or files with a masked value (eg. ******).
+            help, h                 Shows a list of commands or help for one command
             
         GLOBAL OPTIONS:
            --help, -h		show help
