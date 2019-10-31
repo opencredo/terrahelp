@@ -83,6 +83,49 @@ Terraform will perform the following actions:
     }`, b)
 }
 
+func TestMasker_Mask_StreamedSensitiveDataWithANSIEscapeCodes(t *testing.T) {
+	// Given some input content
+	ctx, stdinSim, stdoutSim := defaultTestMaskOpts(t)
+	defer stdinSim.end()
+	defer stdoutSim.end()
+	m := NewMasker(ctx, &DefaultReplaceables{
+		[]string{"sensitive-value-1-AK#%DJGHS*G"}})
+
+	// When we simulate piping this content (which contains
+	// only the known sensitive data) into stdIn
+	stdinSim.write(
+		`
+Terraform will perform the following actions:
+
+[1m  # template_dir.config[0m will be created[0m[0m
+[0m[32m  +[0m [0mresource "template_dir" "config" {
+      [32m+[0m [0m[1m[0mdestination_dir[0m[0m = "./renders"
+      [32m+[0m [0m[1m[0mid[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0msource_dir[0m[0m      = "./templates"
+      [32m+[0m [0m[1m[0mvars[0m[0m            = {
+          [32m+[0m [0m"msg1" = "sensitive-value-1-AK#%DJGHS*G"
+        }
+    }`)
+	err := m.Mask()
+
+	// Then the output should have that sensitive data masked
+	assert.NoError(t, err)
+	b := stdoutSim.getAllContent()
+	assert.Equal(t,
+		`
+Terraform will perform the following actions:
+
+  # template_dir.config will be created
+  + resource "template_dir" "config" {
+      + destination_dir = "./renders"
+      + id              = (known after apply)
+      + source_dir      = "./templates"
+      + vars            = {
+          + "msg1" = "******"
+        }
+    }`, b)
+}
+
 func TestMasker_Mask_StreamedNothing2KnownSensitiveDataTransform(t *testing.T) {
 	// Given some input content
 	ctx, stdinSim, stdoutSim := defaultTestMaskOpts(t)
