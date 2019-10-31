@@ -11,8 +11,7 @@ matrix:
   allow_failures:
     - go: tip
 script:
-  - make check
-  - make test
+  - make build
 after_success:
   - make dist
 deploy:
