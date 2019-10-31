@@ -105,8 +105,7 @@ After a build has completed successfully a binary will be built and placed into 
 
 ### Installing and Executing
 
-Assuming that your Go environment is setup correctly, an installed binary will be placed in your $GOPATH/bin directory.
-The following commands install and execute Terrahelp.
+Installation places the binary in the `$GOPATH/bin` directory. Assuming that the directory has been added to your `PATH`, the following commands will install and execute Terrahelp.
 
     make install
     terrahelp -v
