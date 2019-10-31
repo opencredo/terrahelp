@@ -4,6 +4,9 @@ NAME ?= terrahelp
 
 BUILDARGS ?= -mod=vendor
 
+REQ_GO_VERSION := 1.13
+GO_VERSION := $(shell go version | sed -E 's/^go version go([0-9]+.[0-9]+.[0-9]+).*$$/\1/')
+
 BIN := $(CURDIR)/bin
 DIST := $(CURDIR)/dist
 OUPUT_FILES := $(BIN) $(DIST)
@@ -12,21 +15,30 @@ PLATFORMS ?= darwin linux
 ARCH ?= amd64
 OS = $(word 1, $@)
 
+.PHONY: ensure-version
+ensure-version:
+	@ echo -n "==> Checking go version... "
+ifneq (,$(findstring $(REQ_GO_VERSION),$(GO_VERSION)))
+	@ echo "OK!"
+else
+	@ $(error Found go $(GO_VERSION) but we require $(REQ_GO_VERSION))
+endif
+
 .PHONY: check
 check:
-	go vet (BUILDARGS) ./...
+	go vet $(BUILDARGS) ./...
 
 .PHONY: test
 test:
 	go test $(BUILDARGS) -v ./...
 
 .PHONY: build
-build:
+build: ensure-version dependencies check test
 	go build $(BUILDARGS) -o bin/$(NAME)
 
 .PHONY: install
 install: build
-	cp bin/$(NAME) ${GOPATH}/bin/$(NAME)
+	cp -f bin/$(NAME) ${GOPATH}/bin/$(NAME)
 
 .PHONY: uninstall
 uninstall:
@@ -41,7 +53,7 @@ ifneq ($(OUPUT_FILES),)
 endif
 
 .PHONY: $(PLATFORMS)
-$(PLATFORMS):
+$(PLATFORMS): ensure-version dependencies check test
 	@ echo "==> Building $(OS) distribution"
 	@ mkdir -p $(BIN)/$(OS)/$(ARCH)
 	@ mkdir -p $(DIST)
