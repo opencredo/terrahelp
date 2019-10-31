@@ -25,8 +25,8 @@ build:
 	go build $(BUILDARGS) -o bin/$(NAME)
 
 .PHONY: install
-install:
-	go build $(BUILDARGS) -o ${GOPATH}/bin/$(NAME)
+install: build
+	cp bin/$(NAME) ${GOPATH}/bin/$(NAME)
 
 .PHONY: uninstall
 uninstall:
