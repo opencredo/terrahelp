@@ -405,6 +405,11 @@ func maskCommand() cli.Command {
 				Usage:       "Excludes the masking of whitespace only values (defaults to true)",
 				Destination: &ctxOpts.ExcludeWhitespaceOnly,
 			},
+			cli.BoolFlag{
+				Name:        "Enable011",
+				Usage:       "Configures Terrahelp to process Terraform 0.11 console formated output, (default to false)",
+				Destination: &ctxOpts.Enable011,
+			},
 		},
 		Action: func(c *cli.Context) {
 			setupTransformableItems(c, ctxOpts.TransformOpts, noBackup, bkpExt)
