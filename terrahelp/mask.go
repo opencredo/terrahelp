@@ -109,8 +109,6 @@ func (m *Masker) mask(t Transformable) error {
 
 func (m *Masker) maskBytes(plain []byte) ([]byte, error) {
 
-
-
 	// Convert and strip out the ascii colours.
 	inlinedText := stripansi.Strip(string(plain))
 	sensitiveVals, err := m.replacables.Values()
