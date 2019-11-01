@@ -76,20 +76,20 @@ dist: $(PLATFORMS)
 
 .PHONY: dependencies
 dependencies:
-	@ echo "==> Downloading dependencies for $(TARGET)"
+	@ echo "==> Downloading dependencies for $(NAME)"
 	@ go mod download
 
 .PHONY: vendor-dependencies
 vendor-dependencies:
-	@ echo "==> Downloading dependencies for $(TARGET)"
+	@ echo "==> Downloading dependencies for $(NAME)"
 	@ go mod vendor
 
 .PHONY: tidy-dependencies
 tidy-dependencies:
-	@ echo "==> Tidying dependencies for $(TARGET)"
+	@ echo "==> Tidying dependencies for $(NAME)"
 	@ go mod tidy
 
 .PHONY: clean-dependencies
 clean-dependencies:
-	@ echo "==> Cleaning dependencies for $(TARGET)"
+	@ echo "==> Cleaning dependencies for $(NAME)"
 	@ rm -rf $(VENDOR)
