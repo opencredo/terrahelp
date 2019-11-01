@@ -6,9 +6,9 @@ import (
 	"testing"
 )
 
-func defaultTestMaskOpts_enable011(t *testing.T) (*MaskOpts, *stdinSim, *stdoutSim) {
+func defaultTestMaskOpts_enablePre012(t *testing.T) (*MaskOpts, *stdinSim, *stdoutSim) {
 	ctx := NewDefaultMaskOpts()
-	ctx.Enable011 = true
+	ctx.EnablePre012 = true
 	stdinSim := newStdinSim(t)
 	stdinSim.start()
 	stdoutSim := newStdoutSim(t)
@@ -18,13 +18,13 @@ func defaultTestMaskOpts_enable011(t *testing.T) (*MaskOpts, *stdinSim, *stdoutS
 	return ctx, stdinSim, stdoutSim
 }
 
-func TestMasker_Mask_enable011_StreamedNonSensitiveData(t *testing.T) {
+func TestMasker_Mask_enablePre012_StreamedNonSensitiveData(t *testing.T) {
 	// Given some input content ...
 	var data = `hello there
                     I am some data
                     to be piped in`
 
-	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enable011(t)
+	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enablePre012(t)
 	defer stdinSim.end()
 	defer stdoutSim.end()
 	m := NewMasker(ctx, nil)
@@ -41,9 +41,9 @@ func TestMasker_Mask_enable011_StreamedNonSensitiveData(t *testing.T) {
 	assert.Equal(t, data, b)
 }
 
-func TestMasker_Mask_enable011_StreamedSensitiveData(t *testing.T) {
+func TestMasker_Mask_enablePre012_StreamedSensitiveData(t *testing.T) {
 	// Given some input content
-	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enable011(t)
+	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enablePre012(t)
 	defer stdinSim.end()
 	defer stdoutSim.end()
 	m := NewMasker(ctx, &DefaultReplaceables{
@@ -68,9 +68,9 @@ The Terraform execution plan has been generated and is shown below ...
     rendered:  "******"`, b)
 }
 
-func TestMasker_Mask_enable011_StreamedNothing2KnownSensitiveDataTransform(t *testing.T) {
+func TestMasker_Mask_enablePre012_StreamedNothing2KnownSensitiveDataTransform(t *testing.T) {
 	// Given some input content
-	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enable011(t)
+	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enablePre012(t)
 	defer stdinSim.end()
 	defer stdoutSim.end()
 	m := NewMasker(ctx, &DefaultReplaceables{
@@ -99,9 +99,9 @@ The Terraform execution plan has been generated and is shown below ...
     vars.msg1: "" => "******" (forces new resource)`, b)
 }
 
-func TestMasker_Mask_enable011_StreamedPrevVal2KnownSensitiveDataTransform(t *testing.T) {
+func TestMasker_Mask_enablePre012_StreamedPrevVal2KnownSensitiveDataTransform(t *testing.T) {
 	// Given some input content ...
-	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enable011(t)
+	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enablePre012(t)
 	defer stdinSim.end()
 	defer stdoutSim.end()
 	m := NewMasker(ctx, &DefaultReplaceables{
@@ -132,10 +132,10 @@ The Terraform execution plan has been generated and is shown below ...
     vars.msg1: "******" => "******" (forces new resource)`, b)
 }
 
-func TestMasker_Mask_enable011_StreamedPrevVal2KnownSensitiveDataTransform_IgnorePrev(t *testing.T) {
+func TestMasker_Mask_enablePre012_StreamedPrevVal2KnownSensitiveDataTransform_IgnorePrev(t *testing.T) {
 	// Given some input content and an explicit directive NOT
 	// to attempt to detect previous sensitive values ...
-	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enable011(t)
+	ctx, stdinSim, stdoutSim := defaultTestMaskOpts_enablePre012(t)
 	ctx.ReplacePrevVals = false
 	defer stdinSim.end()
 	defer stdoutSim.end()

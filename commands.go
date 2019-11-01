@@ -406,9 +406,9 @@ func maskCommand() cli.Command {
 				Destination: &ctxOpts.ExcludeWhitespaceOnly,
 			},
 			cli.BoolFlag{
-				Name:        "Enable011",
-				Usage:       "Configures Terrahelp to process Terraform 0.11 console formated output, (default to false)",
-				Destination: &ctxOpts.Enable011,
+				Name:        "enablepre012",
+				Usage:       "Configures Terrahelp to process pre 0.12 formated console output, (defaults to false)",
+				Destination: &ctxOpts.EnablePre012,
 			},
 		},
 		Action: func(c *cli.Context) {
