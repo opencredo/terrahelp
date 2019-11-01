@@ -43,7 +43,7 @@ test:
 	go test $(BUILDARGS) -v ./...
 
 .PHONY: build
-build: ensure-version dependencies check test
+build: ensure-version check test
 	go build $(BUILDARGS) -o bin/$(NAME)
 
 .PHONY: install
@@ -63,7 +63,7 @@ ifneq ($(OUPUT_FILES),)
 endif
 
 .PHONY: $(PLATFORMS)
-$(PLATFORMS): ensure-version dependencies check test
+$(PLATFORMS): ensure-version check test
 	@ echo "==> Building $(OS) distribution"
 	@ mkdir -p $(BIN)/$(OS)/$(ARCH)
 	@ mkdir -p $(DIST)
