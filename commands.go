@@ -364,13 +364,13 @@ func maskCommand() cli.Command {
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "maskchar",
-				Value:       terrahelp.ThMaskChar,
+				Value:       terrahelp.MaskChar,
 				Usage:       "Forms mask pattern (numchars x maskchar) to replace sensitive data with",
 				Destination: &ctxOpts.MaskChar,
 			},
 			cli.IntFlag{
 				Name:        "numchars",
-				Value:       terrahelp.ThMaskCharNum,
+				Value:       terrahelp.NumberOfMaskChar,
 				Usage:       fmt.Sprintf("Forms mask pattern (numchars x maskchar) to replace sensitive data with"),
 				Destination: &ctxOpts.MaskNumChar,
 			},

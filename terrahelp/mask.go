@@ -44,22 +44,22 @@ func (m *MaskOpts) getMask() string {
 func NewDefaultMaskOpts() *MaskOpts {
 	return &MaskOpts{
 		TransformOpts:   &TransformOpts{TfvarsFilename: TfvarsFilename},
-		MaskChar:        ThMaskChar,
-		MaskNumChar:     ThMaskCharNum,
+		MaskChar:        MaskChar,
+		MaskNumChar:     NumberOfMaskChar,
 		ReplacePrevVals: true,
 	}
 }
 
 // Default mask related values
 const (
-	ThMaskChar    = "*"
-	ThMaskCharNum = 6
+	MaskChar         = "*"
+	NumberOfMaskChar = 6
 
-	ThPrev2CurrPatternPre012        = "\"(.+)\"\\s*=>\\s*\"(\\%s*)\""
-	ThPrev2CurrReplacePatternPre012 = "\"%s\" => \"%s\""
+	PrevVal2CurrentValConsolePatternPre012 = "\"(.+)\"\\s*=>\\s*\"(\\%s*)\""
+	PrevVal2MaskedValConsolePatternPre012  = "\"%s\" => \"%s\""
 
-	ThPrev2CurrPattern        = "= \"(.+)\"\\s*->\\s*\"(\\%s*)\""
-	ThPrev2CurrReplacePattern = "= \"%s\" -> \"%s\""
+	PrevVal2CurrentValConsolePattern = "= \"(.+)\"\\s*->\\s*\"(\\%s*)\""
+	PrevVal2MaskedValConsolePattern  = "= \"%s\" -> \"%s\""
 )
 
 // Mask will ensure the appropriate areas of the input content
@@ -125,18 +125,18 @@ func (m *Masker) maskBytes(plain []byte) ([]byte, error) {
 		// and apply where previous sensitive values may also be exposed. We try to catch
 		// these too
 
-		ThPrev2CurrPattern := ThPrev2CurrPattern
-		ThPrev2CurrReplacePattern := ThPrev2CurrReplacePattern
+		selectPattern := PrevVal2CurrentValConsolePattern
+		replacePattern := PrevVal2MaskedValConsolePattern
 
 		// If the enable 0.11 flag has been set then use the tf 0.11 patterns
 		if m.ctx.EnablePre012 {
-			ThPrev2CurrPattern = ThPrev2CurrPatternPre012
-			ThPrev2CurrReplacePattern = ThPrev2CurrReplacePatternPre012
+			selectPattern = PrevVal2CurrentValConsolePatternPre012
+			replacePattern = PrevVal2MaskedValConsolePatternPre012
 		}
 
-		r := regexp.MustCompile(fmt.Sprintf(ThPrev2CurrPattern, m.ctx.MaskChar))
+		r := regexp.MustCompile(fmt.Sprintf(selectPattern, m.ctx.MaskChar))
 		inlinedText = r.ReplaceAllString(inlinedText,
-			fmt.Sprintf(ThPrev2CurrReplacePattern, m.ctx.getMask(), m.ctx.getMask()))
+			fmt.Sprintf(replacePattern, m.ctx.getMask(), m.ctx.getMask()))
 	}
 	return []byte(inlinedText), nil
 }
