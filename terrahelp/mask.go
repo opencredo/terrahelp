@@ -123,11 +123,11 @@ func (m *Masker) maskBytes(plain []byte) ([]byte, error) {
 
 		r := regexp.MustCompile(fmt.Sprintf(PrevVal2CurrentValSelectPattern, m.ctx.MaskChar))
 		groups := r.FindAllStringSubmatch(inlinedText, -1)
+		maskedReplaceVal := fmt.Sprintf(PrevVal2MaskedValReplacePattern, m.ctx.getMask())
 
 		for i := range groups {
 			previousSensitiveVal := groups[i][2]
-			inlinedText = strings.ReplaceAll(inlinedText, previousSensitiveVal,
-				fmt.Sprintf(PrevVal2MaskedValReplacePattern, m.ctx.getMask()))
+			inlinedText = strings.ReplaceAll(inlinedText, previousSensitiveVal, maskedReplaceVal)
 		}
 	}
 	return []byte(inlinedText), nil
