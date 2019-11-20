@@ -8,7 +8,6 @@ import (
 
 func defaultTestMaskOpts_enablePre012(t *testing.T) (*MaskOpts, *stdinSim, *stdoutSim) {
 	ctx := NewDefaultMaskOpts()
-	ctx.EnablePre012 = true
 	stdinSim := newStdinSim(t)
 	stdinSim.start()
 	stdoutSim := newStdoutSim(t)

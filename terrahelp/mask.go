@@ -32,7 +32,6 @@ type MaskOpts struct {
 	MaskNumChar           int
 	ReplacePrevVals       bool
 	ExcludeWhitespaceOnly bool
-	EnablePre012          bool
 }
 
 func (m *MaskOpts) getMask() string {
@@ -55,11 +54,8 @@ const (
 	MaskChar         = "*"
 	NumberOfMaskChar = 6
 
-	PrevVal2CurrentValConsolePatternPre012 = "\"(.+)\"\\s*=>\\s*\"(\\%s*)\""
-	PrevVal2MaskedValConsolePatternPre012  = "\"%s\" => \"%s\""
-
-	PrevVal2CurrentValConsolePattern = "= \"(.+)\"\\s*->\\s*\"(\\%s*)\""
-	PrevVal2MaskedValConsolePattern  = "= \"%s\" -> \"%s\""
+	PrevVal2CurrentValSelectPattern = "(=\\s*|:\\s*)(\".+\")\\s*(=|-)>\\s*\"(\\%s*)\""
+	PrevVal2MaskedValReplacePattern = "\"%s\""
 )
 
 // Mask will ensure the appropriate areas of the input content
@@ -123,20 +119,16 @@ func (m *Masker) maskBytes(plain []byte) ([]byte, error) {
 	if m.ctx.ReplacePrevVals {
 		// Additionally there are some patterns (specifically when doing terraform plans
 		// and apply where previous sensitive values may also be exposed. We try to catch
-		// these too
+		// these too.
 
-		selectPattern := PrevVal2CurrentValConsolePattern
-		replacePattern := PrevVal2MaskedValConsolePattern
+		r := regexp.MustCompile(fmt.Sprintf(PrevVal2CurrentValSelectPattern, m.ctx.MaskChar))
+		groups := r.FindAllStringSubmatch(inlinedText, -1)
 
-		// If the enable 0.11 flag has been set then use the tf 0.11 patterns
-		if m.ctx.EnablePre012 {
-			selectPattern = PrevVal2CurrentValConsolePatternPre012
-			replacePattern = PrevVal2MaskedValConsolePatternPre012
+		for i := range groups {
+			previousSensitiveVal := groups[i][2]
+			inlinedText = strings.ReplaceAll(inlinedText, previousSensitiveVal,
+				fmt.Sprintf(PrevVal2MaskedValReplacePattern, m.ctx.getMask()))
 		}
-
-		r := regexp.MustCompile(fmt.Sprintf(selectPattern, m.ctx.MaskChar))
-		inlinedText = r.ReplaceAllString(inlinedText,
-			fmt.Sprintf(replacePattern, m.ctx.getMask(), m.ctx.getMask()))
 	}
 	return []byte(inlinedText), nil
 }

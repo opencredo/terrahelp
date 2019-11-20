@@ -405,11 +405,6 @@ func maskCommand() cli.Command {
 				Usage:       "Excludes the masking of whitespace only values (defaults to true)",
 				Destination: &ctxOpts.ExcludeWhitespaceOnly,
 			},
-			cli.BoolFlag{
-				Name:        "enablepre012",
-				Usage:       "Configures Terrahelp to process pre 0.12 formated console output, (defaults to false)",
-				Destination: &ctxOpts.EnablePre012,
-			},
 		},
 		Action: func(c *cli.Context) {
 			setupTransformableItems(c, ctxOpts.TransformOpts, noBackup, bkpExt)
