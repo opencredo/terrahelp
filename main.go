@@ -8,13 +8,25 @@ import (
 	"github.com/opencredo/terrahelp/terrahelp"
 )
 
+var (
+	name    = "terrahelp"
+	usage   = "Provides additional functions helpful with terraform development"
+	version = "0.7.2-dev"
+	author  = "https://github.com/opencredo OpenCredo - Nicki Watt"
+	commit  string
+)
+
 func main() {
 
+	cli.VersionPrinter = func(c *cli.Context) {
+		fmt.Fprintf(c.App.Writer, "version=%s commit=%s\n", c.App.Version, commit)
+	}
+
 	app := cli.NewApp()
-	app.Name = "terrahelp"
-	app.Usage = "Provides additional functions helpful with terraform development"
-	app.Version = "0.7.2-dev"
-	app.Author = "https://github.com/opencredo OpenCredo - Nicki Watt"
+	app.Name = name
+	app.Usage = usage
+	app.Version = version
+	app.Author = author
 	app.Commands = []cli.Command{
 		vaultAutoConfigCommand(newTerraHelperFunc()),
 		encryptCommand(newTerraHelperFunc()),
