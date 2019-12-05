@@ -2,6 +2,9 @@ SHELL := /bin/bash
 
 NAME ?= terrahelp
 
+COMMIT = $(shell git rev-parse HEAD)
+
+LDFLAGS := -ldflags "-X=main.commit=$(COMMIT)"
 BUILDARGS ?= -mod=vendor
 
 # Set to 1 to skip Go version check in the ensure-version target.
@@ -41,15 +44,15 @@ endif
 
 .PHONY: check
 check:
-	go vet $(BUILDARGS) ./...
+	go vet $(BUILDARGS) $(LDFLAGS) ./...
 
 .PHONY: test
 test:
-	go test $(BUILDARGS) -v ./...
+	go test $(BUILDARGS) $(LDFLAGS) -v ./...
 
 .PHONY: build
 build: ensure-version check test
-	go build $(BUILDARGS) -o bin/$(NAME)
+	go build $(BUILDARGS) $(LDFLAGS) -o bin/$(NAME)
 
 .PHONY: install
 install: build
@@ -72,8 +75,7 @@ $(PLATFORMS): ensure-version check test
 	@ echo "==> Building $(OS) distribution"
 	@ mkdir -p $(BIN)/$(OS)/$(ARCH)
 	@ mkdir -p $(DIST)
-
-	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) go build $(BUILDARGS) -o $(BIN)/$(OS)/$(ARCH)/$(NAME)
+	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) go build $(BUILDARGS) $(LDFLAGS) -o $(BIN)/$(OS)/$(ARCH)/$(NAME)
 	cp -f $(BIN)/$(OS)/$(ARCH)/$(NAME) $(DIST)/$(NAME)-$(OS)-$(ARCH)
 
 	@ $(SHA256_CMD) $(DIST)/$(NAME)-$(OS)-$(ARCH) | awk '{$$2=" $(NAME)-$(OS)-$(ARCH)"; print $$0}' >> $(DIST)/$(NAME).SHA256SUMS
