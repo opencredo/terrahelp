@@ -2,6 +2,7 @@ package terrahelp
 
 import (
 	"fmt"
+	"github.com/acarl005/stripansi"
 	"log"
 	"regexp"
 	"strings"
@@ -42,19 +43,19 @@ func (m *MaskOpts) getMask() string {
 func NewDefaultMaskOpts() *MaskOpts {
 	return &MaskOpts{
 		TransformOpts:   &TransformOpts{TfvarsFilename: TfvarsFilename},
-		MaskChar:        ThMaskChar,
-		MaskNumChar:     ThMaskCharNum,
+		MaskChar:        MaskChar,
+		MaskNumChar:     NumberOfMaskChar,
 		ReplacePrevVals: true,
 	}
 }
 
 // Default mask related values
 const (
-	ThMaskChar    = "*"
-	ThMaskCharNum = 6
+	MaskChar         = "*"
+	NumberOfMaskChar = 6
 
-	ThPrev2CurrPattern        = "\"(.+)\"\\s*=>\\s*\"(\\%s*)\""
-	ThPrev2CurrReplacePattern = "\"%s\" => \"%s\""
+	PrevVal2CurrentValSelectPattern = "(=\\s*|:\\s*)(\".+\")\\s*(=|-)>\\s*\"(\\%s*)\""
+	PrevVal2MaskedValReplacePattern = "\"%s\""
 )
 
 // Mask will ensure the appropriate areas of the input content
@@ -104,8 +105,8 @@ func (m *Masker) mask(t Transformable) error {
 
 func (m *Masker) maskBytes(plain []byte) ([]byte, error) {
 
-	// Replace known sensitive values
-	inlinedText := string(plain)
+	// Convert and strip out the ascii colours.
+	inlinedText := stripansi.Strip(string(plain))
 	sensitiveVals, err := m.replacables.Values()
 	if err != nil {
 		return nil, err
@@ -118,10 +119,16 @@ func (m *Masker) maskBytes(plain []byte) ([]byte, error) {
 	if m.ctx.ReplacePrevVals {
 		// Additionally there are some patterns (specifically when doing terraform plans
 		// and apply where previous sensitive values may also be exposed. We try to catch
-		// these too
-		r := regexp.MustCompile(fmt.Sprintf(ThPrev2CurrPattern, m.ctx.MaskChar))
-		inlinedText = r.ReplaceAllString(inlinedText,
-			fmt.Sprintf(ThPrev2CurrReplacePattern, m.ctx.getMask(), m.ctx.getMask()))
+		// these too.
+
+		r := regexp.MustCompile(fmt.Sprintf(PrevVal2CurrentValSelectPattern, m.ctx.MaskChar))
+		groups := r.FindAllStringSubmatch(inlinedText, -1)
+		maskedReplaceVal := fmt.Sprintf(PrevVal2MaskedValReplacePattern, m.ctx.getMask())
+
+		for i := range groups {
+			previousSensitiveVal := groups[i][2]
+			inlinedText = strings.ReplaceAll(inlinedText, previousSensitiveVal, maskedReplaceVal)
+		}
 	}
 	return []byte(inlinedText), nil
 }
