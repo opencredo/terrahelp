@@ -1,4 +1,4 @@
-## 0.7.3 (unreleased)
+## 0.7.3
 * [PR-30](https://github.com/opencredo/terrahelp/pull/30) Updates Travis CI file to replace missed TRAGET reference with NAME to allow release uploads (resolves [#29](https://github.com/opencredo/terrahelp/issues/29))
 
 ## 0.7.2
