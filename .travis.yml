@@ -24,6 +24,6 @@ deploy:
     - dist/$NAME-*
   skip_cleanup: true
   on:
-    repo: opencredo/$TARGET
+    repo: opencredo/$NAME
     tags: true
     condition: $TRAVIS_GO_VERSION =~ ^1\.13
