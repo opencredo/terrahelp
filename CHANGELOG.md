@@ -1,3 +1,5 @@
+## 0.7.3 (unreleased)
+
 ## 0.7.2
 * [PR-23](https://github.com/opencredo/terrahelp/pull/23) Update Terrahelp to process HCL2 syntax, (including tests and examples) (resolves [#22](https://github.com/opencredo/terrahelp/issues/22))
 * [PR-25](https://github.com/opencredo/terrahelp/pull/25) Updates Makefile and README.md to introduce new targets (resolves [#24](https://github.com/opencredo/terrahelp/issues/24))
