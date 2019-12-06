@@ -1,4 +1,5 @@
 ## 0.7.4 (unreleased)
+* [PR-31](https://github.com/opencredo/terrahelp/pull/31) Introduces sha256sum file covering each distribution binary (resolves [#28](https://github.com/opencredo/terrahelp/issues/28))
 
 ## 0.7.3
 * [PR-30](https://github.com/opencredo/terrahelp/pull/30) Updates Travis CI file to replace missed TRAGET reference with NAME to allow release uploads (resolves [#29](https://github.com/opencredo/terrahelp/issues/29))
