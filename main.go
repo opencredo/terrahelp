@@ -19,7 +19,7 @@ var (
 func main() {
 
 	cli.VersionPrinter = func(c *cli.Context) {
-		fmt.Fprintf(c.App.Writer, "version=%s commit=%s\n", c.App.Version, commit)
+		fmt.Fprintf(c.App.Writer, "GitVersion=%s\nGitCommit=%s\n", c.App.Version, commit)
 	}
 
 	app := cli.NewApp()
