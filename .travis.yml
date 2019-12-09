@@ -22,6 +22,7 @@ deploy:
   file_glob: true
   file:
     - dist/$NAME-*
+    - dist/$NAME.SHA256SUMS
   skip_cleanup: true
   on:
     repo: opencredo/$NAME

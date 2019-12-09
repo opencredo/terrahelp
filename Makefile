@@ -20,6 +20,11 @@ PLATFORMS ?= darwin linux
 ARCH ?= amd64
 OS = $(word 1, $@)
 
+SHA256_CMD = sha256sum
+ifeq ($(shell uname), Darwin)
+	SHA256_CMD = shasum -a 256
+endif
+
 .PHONY: ensure-version
 ensure-version:
 ifeq ($(SKIP_GO_REQ_VERSION_CHECK),1)
@@ -67,12 +72,15 @@ $(PLATFORMS): ensure-version check test
 	@ echo "==> Building $(OS) distribution"
 	@ mkdir -p $(BIN)/$(OS)/$(ARCH)
 	@ mkdir -p $(DIST)
+
 	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) go build $(BUILDARGS) -o $(BIN)/$(OS)/$(ARCH)/$(NAME)
 	cp -f $(BIN)/$(OS)/$(ARCH)/$(NAME) $(DIST)/$(NAME)-$(OS)-$(ARCH)
 
+	@ $(SHA256_CMD) $(DIST)/$(NAME)-$(OS)-$(ARCH) | awk '{$$2=" $(NAME)-$(OS)-$(ARCH)"; print $$0}' >> $(DIST)/$(NAME).SHA256SUMS
+
 .PHONY: dist
 dist: $(PLATFORMS)
-	@ true
+	@ touch $(DIST)/$(NAME).SHA256SUMS
 
 .PHONY: dependencies
 dependencies:
