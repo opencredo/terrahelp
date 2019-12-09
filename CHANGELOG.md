@@ -1,4 +1,4 @@
-## 0.7.4 (unreleased)
+## 0.7.4
 * [PR-31](https://github.com/opencredo/terrahelp/pull/31) Introduces sha256sum file covering each distribution binary (resolves [#28](https://github.com/opencredo/terrahelp/issues/28))
 
 ## 0.7.3
