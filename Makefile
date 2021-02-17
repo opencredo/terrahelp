@@ -8,7 +8,7 @@ BUILDARGS ?= -mod=vendor
 # This is useful when we want to build using development versions of Go.
 SKIP_GO_REQ_VERSION_CHECK ?= 0
 
-REQ_GO_VERSION := 1.13
+REQ_GO_VERSION := 1.16
 GO_VERSION := $(shell go version | sed -E 's/^go version go([0-9]+.[0-9]+.[0-9]+).*$$/\1/')
 MAX_GO_VERSION := $(shell printf "%s\n%s" $(REQ_GO_VERSION) $(GO_VERSION) | sort -V -r | head -1)
 
