@@ -4,10 +4,6 @@ NAME ?= terrahelp
 
 BUILDARGS ?= -mod=vendor
 
-# Set to 1 to skip Go version check in the ensure-version target.
-# This is useful when we want to build using development versions of Go.
-SKIP_GO_REQ_VERSION_CHECK ?= 0
-
 REQ_GO_VERSION := 1.16
 GO_VERSION := $(shell go version | sed -E 's/^go version go([0-9]+.[0-9]+.[0-9]+).*$$/\1/')
 MAX_GO_VERSION := $(shell printf "%s\n%s" $(REQ_GO_VERSION) $(GO_VERSION) | sort -V -r | head -1)
@@ -25,20 +21,6 @@ ifeq ($(shell uname), Darwin)
 	SHA256_CMD = shasum -a 256
 endif
 
-.PHONY: ensure-version
-ensure-version:
-ifeq ($(SKIP_GO_REQ_VERSION_CHECK),1)
-	@ echo "==> Skipping go version check"
-else
-	@ echo -n "==> Checking go version... "
-ifeq ($(GO_VERSION),$(MAX_GO_VERSION))
-	@ echo "OK!"
-else
-	@ $(error Found go $(GO_VERSION) but we require $(REQ_GO_VERSION))
-endif
-endif
-
-
 .PHONY: check
 check:
 	go vet $(BUILDARGS) ./...
@@ -48,7 +30,7 @@ test:
 	go test $(BUILDARGS) -v ./...
 
 .PHONY: build
-build: ensure-version check test
+build: check test
 	go build $(BUILDARGS) -o bin/$(NAME)
 
 .PHONY: install
@@ -68,7 +50,7 @@ ifneq ($(OUPUT_FILES),)
 endif
 
 .PHONY: $(PLATFORMS)
-$(PLATFORMS): ensure-version check test
+$(PLATFORMS): check test
 	@ echo "==> Building $(OS) distribution"
 	@ mkdir -p $(BIN)/$(OS)/$(ARCH)
 	@ mkdir -p $(DIST)
