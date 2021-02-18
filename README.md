@@ -87,7 +87,7 @@ Not yet supported
 
 ### Prerequisites
 
-Install Go (Terrahelp is currently built against 1.13.x).  The following official resources will guide you through your environment setup.
+Install Go (Terrahelp is currently built against 1.16.x).  The following official resources will guide you through your environment setup.
 
 * [Getting Started](https://golang.org/doc/install)
 * [Go Documentation](https://golang.org/doc)
