@@ -9,77 +9,73 @@ GO_VERSION := $(shell go version | sed -E 's/^go version go([0-9]+.[0-9]+.[0-9]+
 MAX_GO_VERSION := $(shell printf "%s\n%s" $(REQ_GO_VERSION) $(GO_VERSION) | sort -V -r | head -1)
 
 BIN := $(CURDIR)/bin
-DIST := $(CURDIR)/dist
-OUPUT_FILES := $(BIN) $(DIST)
-
-PLATFORMS ?= darwin linux
-ARCH ?= amd64
-OS = $(word 1, $@)
 
 SHA256_CMD = sha256sum
 ifeq ($(shell uname), Darwin)
 	SHA256_CMD = shasum -a 256
 endif
 
-.PHONY: check
-check:
-	go vet $(BUILDARGS) ./...
+go_files := $(shell find . -path '*/testdata' -prune -o -type f -name '*.go' ! -type d -name './vendor' -print)
 
-.PHONY: test
-test:
-	go test $(BUILDARGS) -v ./...
+.DEFAULT_GOAL := all
+.PHONY := all vet fmt fmtcheck test install uninstall clean dependencies vendor-dependencies tidy-dependencies clean-dependencies
 
-.PHONY: build
-build: check test
-	go build $(BUILDARGS) -o bin/$(NAME)
+vet: $(go_files)
+	go vet  ./...
 
-.PHONY: install
+fmt:
+	@go run golang.org/x/tools/cmd/goimports -w $(go_files)
+
+fmtcheck: $(go_files)
+	# Checking format of Go files...
+	@GOIMPORTS=$$(go run golang.org/x/tools/cmd/goimports -l $(go_files)) && \
+	if [ "$$GOIMPORTS" != "" ]; then \
+		go run golang.org/x/tools/cmd/goimports -d $(go_files); \
+		exit 1; \
+	fi
+
+bin/.coverage.out: $(go_files)
+	@mkdir -p bin/
+	RS_API_URL=$(TEST_DB_URL) RS_USERNAME=$(TEST_USERNAME) RS_PASSWORD=$(TEST_PASSWORD) RS_DB=$(TEST_DB_NAME) go test -v ./... -coverpkg=$(shell go list ./... | xargs | sed -e 's/ /,/g') -coverprofile bin/.coverage.tmp
+	@mv bin/.coverage.tmp bin/.coverage.out
+
+test: bin/.coverage.out
+
+coverage: bin/.coverage.out
+	@go tool cover -html=bin/.coverage.out
+
+bin/terrahelp: $(go_files)
+	go build -trimpath -o ./bin/$(NAME)
+
+build: vet fmtcheck bin/terrahelp
+
 install: build
 	cp -f bin/$(NAME) ${GOPATH}/bin/$(NAME)
 
-.PHONY: uninstall
 uninstall:
 	@ echo "==> Uninstalling $(NAME)"
 	rm -f $$(which ${NAME})
 
-.PHONY: clean
 clean:
 	@ echo "==> Cleaning output files."
-ifneq ($(OUPUT_FILES),)
-	rm -rf $(OUPUT_FILES)
+ifneq ($(BIN),)
+	rm -rf $(BIN)
 endif
 
-.PHONY: $(PLATFORMS)
-$(PLATFORMS): check test
-	@ echo "==> Building $(OS) distribution"
-	@ mkdir -p $(BIN)/$(OS)/$(ARCH)
-	@ mkdir -p $(DIST)
-
-	CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) go build $(BUILDARGS) -o $(BIN)/$(OS)/$(ARCH)/$(NAME)
-	cp -f $(BIN)/$(OS)/$(ARCH)/$(NAME) $(DIST)/$(NAME)-$(OS)-$(ARCH)
-
-	@ $(SHA256_CMD) $(DIST)/$(NAME)-$(OS)-$(ARCH) | awk '{$$2=" $(NAME)-$(OS)-$(ARCH)"; print $$0}' >> $(DIST)/$(NAME).SHA256SUMS
-
-.PHONY: dist
-dist: $(PLATFORMS)
-	@ touch $(DIST)/$(NAME).SHA256SUMS
-
-.PHONY: dependencies
 dependencies:
 	@ echo "==> Downloading dependencies for $(NAME)"
 	@ go mod download
 
-.PHONY: vendor-dependencies
 vendor-dependencies:
 	@ echo "==> Downloading dependencies for $(NAME)"
 	@ go mod vendor
 
-.PHONY: tidy-dependencies
 tidy-dependencies:
 	@ echo "==> Tidying dependencies for $(NAME)"
 	@ go mod tidy
 
-.PHONY: clean-dependencies
 clean-dependencies:
 	@ echo "==> Cleaning dependencies for $(NAME)"
 	@ rm -rf $(VENDOR)
+
+all: test build
