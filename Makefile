@@ -1,21 +1,9 @@
 SHELL := /bin/bash
 
 NAME ?= terrahelp
-
-BUILDARGS ?= -mod=vendor
-
-REQ_GO_VERSION := 1.16
-GO_VERSION := $(shell go version | sed -E 's/^go version go([0-9]+.[0-9]+.[0-9]+).*$$/\1/')
-MAX_GO_VERSION := $(shell printf "%s\n%s" $(REQ_GO_VERSION) $(GO_VERSION) | sort -V -r | head -1)
-
 BIN := $(CURDIR)/bin
 
-SHA256_CMD = sha256sum
-ifeq ($(shell uname), Darwin)
-	SHA256_CMD = shasum -a 256
-endif
-
-go_files := $(shell find . -path '*/testdata' -prune -o -type f -name '*.go' ! -type d -name './vendor' -print)
+go_files := $(shell find . -path '*/testdata' -prune -o -type f -name '*.go' -not -path "./vendor/*" -print)
 
 .DEFAULT_GOAL := all
 .PHONY := all vet fmt fmtcheck test install uninstall clean dependencies vendor-dependencies tidy-dependencies clean-dependencies

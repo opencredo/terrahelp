@@ -2,10 +2,11 @@ package terrahelp
 
 import (
 	"fmt"
-	"github.com/acarl005/stripansi"
 	"log"
 	"regexp"
 	"strings"
+
+	"github.com/acarl005/stripansi"
 )
 
 // Masker exposes the ability to obfuscate sensitive data found within certain

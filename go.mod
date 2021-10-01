@@ -8,6 +8,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0
 	github.com/hashicorp/vault/api v1.0.4
 	github.com/stretchr/testify v1.3.0
+	golang.org/x/tools v0.0.0-20190524140312-2c0ae7006135
 )
 
 require (
