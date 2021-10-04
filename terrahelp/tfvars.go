@@ -3,11 +3,12 @@ package terrahelp
 import (
 	"io/ioutil"
 
+	"sort"
+	"strings"
+
 	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/hcl/hcl/ast"
 	"github.com/hashicorp/hcl/hcl/token"
-	"sort"
-	"strings"
 )
 
 // Replaceables defines the values which should be replaced as part of
