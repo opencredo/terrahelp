@@ -1,4 +1,7 @@
-## 0.7.5 (unreleased
+## 0.7.5 (unreleased)
+* [PR-37](https://github.com/opencredo/terrahelp/pull/37) Update Terrahelp build pipeline to user GitHub Actions, (includes update to go 1.17))
+* [PR-36](https://github.com/opencredo/terrahelp/pull/36) Remove quoted types in variables for tf > 0.11 support
+* [PR-32](https://github.com/opencredo/terrahelp/pull/32) Add Brew installation instructions
 
 ## 0.7.4
 * [PR-31](https://github.com/opencredo/terrahelp/pull/31) Introduces sha256sum file covering each distribution binary (resolves [#28](https://github.com/opencredo/terrahelp/issues/28))
