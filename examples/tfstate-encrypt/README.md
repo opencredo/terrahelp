@@ -5,7 +5,7 @@ This example contains a very simple terraform setup composed entirely of local r
 This example is completely safe to run and will not land up costing you any money in a cloud provider! It currently demonstrates a terraform 0.12.x based setup which includes new syntax.
  
 The CLI itself offers a more comprehensive view of the various options available, so please use this if you need more info.
-Additionally you can read this corresponding blog which gives a more detailed explanation of this functionality and its usage: [Securing Terraform State with Vault](https://www.opencredo.com/securing-terraform-state-with-vault).
+Additionally you can read this corresponding blog which gives a more detailed explanation of this functionality and its usage: [Securing Terraform State with Vault](https://opencredo.com/blogs/securing-terraform-state-with-vault).
 
 ### Simple inline encryption of terraform output
 
