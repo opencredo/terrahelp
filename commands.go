@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/codegangsta/cli"
 	"github.com/opencredo/terrahelp/terrahelp"
+	"github.com/urfave/cli"
 )
 
 const (
