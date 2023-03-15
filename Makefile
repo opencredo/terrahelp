@@ -6,7 +6,7 @@ BIN := $(CURDIR)/bin
 go_files := $(shell find . -path '*/testdata' -prune -o -type f -name '*.go' -not -path "./vendor/*" -print)
 
 .DEFAULT_GOAL := all
-.PHONY := all vet fmt fmtcheck test install uninstall clean dependencies vendor-dependencies tidy-dependencies clean-dependencies
+.PHONY := all vet fmt fmtcheck test install uninstall clean dependencies tidy-dependencies clean-dependencies
 
 vet: $(go_files)
 	go vet  ./...
@@ -53,10 +53,6 @@ endif
 dependencies:
 	@ echo "==> Downloading dependencies for $(NAME)"
 	@ go mod download
-
-vendor-dependencies:
-	@ echo "==> Downloading dependencies for $(NAME)"
-	@ go mod vendor
 
 tidy-dependencies:
 	@ echo "==> Tidying dependencies for $(NAME)"
